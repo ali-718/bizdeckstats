@@ -37,6 +37,9 @@ class Login extends Component {
   }
 
   SimpleLogin = () => {
+    this.setState({
+      isLoading: true
+    });
     f.auth()
       .signInWithEmailAndPassword(this.state.Email, this.state.Password)
       .then(user => {
@@ -50,6 +53,9 @@ class Login extends Component {
               console.log("res.val() is availaible");
               this.props.LoginAction(item.val());
               this.props.navigation.navigate("Edit", { fromLogin: true });
+              this.setState({
+                isLoading: false
+              });
             } else {
               f.database()
                 .ref("users")
@@ -63,6 +69,9 @@ class Login extends Component {
                   console.log("res.val() not working");
                   console.log("user added succcessfully");
                   this.props.navigation.navigate("Edit");
+                  this.setState({
+                    isLoading: false
+                  });
                 });
             }
           });
@@ -96,6 +105,9 @@ class Login extends Component {
                 console.log("res.val() is availaible");
                 this.props.LoginAction(item.val());
                 this.props.navigation.navigate("Edit", { fromLogin: true });
+                this.setState({
+                  isLoading: false
+                });
               } else {
                 f.database()
                   .ref("users")
@@ -110,6 +122,9 @@ class Login extends Component {
                     console.log("res.val() not working");
                     console.log("user added succcessfully");
                     this.props.navigation.navigate("Edit");
+                    this.setState({
+                      isLoading: false
+                    });
                   });
               }
             });
