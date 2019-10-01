@@ -40,6 +40,8 @@ const NavigationOptions = props => (
           rounded
           source={{
             uri: props.user.user.avatar
+              ? props.user.user.avatar
+              : "https://via.placeholder.com/300"
           }}
         />
         <Text
@@ -52,7 +54,9 @@ const NavigationOptions = props => (
         >
           {props.user.user.name}
         </Text>
-        <Text style={{ color: "black" }}>{props.user.user.email}</Text>
+        <Text style={{ color: "black" }}>
+          {props.user.user.email ? props.user.user.email : "Email not given"}
+        </Text>
         <TouchableOpacity
           onPress={() => {
             props.LogoutUser(props.navigation);

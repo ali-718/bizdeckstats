@@ -180,7 +180,12 @@ export default class Edit extends Component {
                   showEditButton
                   size="xlarge"
                   rounded
-                  source={{ uri: this.state.user.avatar }}
+                  source={{
+                    uri:
+                      this.state.user.avatar !== null
+                        ? this.state.user.avatar
+                        : "https://via.placeholder.com/300"
+                  }}
                   onPress={() => this.fetchImage()}
                 />
               )}

@@ -17,15 +17,58 @@ class Login extends Component {
   componentDidMount() {
     f.auth().onAuthStateChanged(user => {
       if (user) {
+        console.log(user);
         this.props.LoginAction({
           name: user.providerData[0].displayName,
           avatar: user.providerData[0].photoURL,
           email: user.providerData[0].email
         });
-        this.props.navigation.navigate("Home");
+        f.database()
+          .ref("users")
+          .child(user.uid)
+          .once("value")
+          .then(item => {
+            console.log("res.val() is availaible");
+            this.props.LoginAction(item.val());
+            this.props.navigation.navigate("Home");
+          });
       }
     });
   }
+
+  SimpleLogin = () => {
+    f.auth()
+      .signInWithEmailAndPassword(this.state.Email, this.state.Password)
+      .then(user => {
+        console.log(user);
+        f.database()
+          .ref("users")
+          .child(user.user.uid)
+          .once("value")
+          .then(item => {
+            if (item.val()) {
+              console.log("res.val() is availaible");
+              this.props.LoginAction(item.val());
+              this.props.navigation.navigate("Edit", { fromLogin: true });
+            } else {
+              f.database()
+                .ref("users")
+                .child(user.user.uid)
+                .set({
+                  name: user.user.providerData[0].displayName,
+                  email: user.user.providerData[0].email
+                })
+                .then(() => {
+                  this.props.LoginAction(item.val());
+                  console.log("res.val() not working");
+                  console.log("user added succcessfully");
+                  this.props.navigation.navigate("Edit");
+                });
+            }
+          });
+      })
+      .catch(e => console.log(e));
+  };
 
   FacebookLogin = async () => {
     this.setState({
@@ -103,6 +146,7 @@ class Login extends Component {
               fontSize: 20,
               paddingLeft: 10
             }}
+            autoCapitalize={false}
             placeholder="Username or Email"
             placeholderTextColor="#A9A9A9"
           />
@@ -110,7 +154,8 @@ class Login extends Component {
             onChangeText={val => {
               this.setState({ Password: val });
             }}
-            value={this.state.Email}
+            autoCapitalize={false}
+            value={this.state.Password}
             style={{
               borderWidth: 1,
               width: "80%",
@@ -127,6 +172,7 @@ class Login extends Component {
         </View>
         <View style={{ marginTop: 20, width: "100%", alignItems: "center" }}>
           <TouchableOpacity
+            onPress={() => this.SimpleLogin()}
             style={{
               backgroundColor: "#3498F1",
               width: "80%",

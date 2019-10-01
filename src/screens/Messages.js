@@ -41,34 +41,7 @@ export default class Messages extends React.Component {
         });
       })
       .then(() => {
-        f.database()
-          .ref("chats")
-          .on("value", snapshot => {
-            snapshot.forEach(childSnapshot => {
-              if (
-                (childSnapshot.val().senderId === auth.currentUser.uid &&
-                  childSnapshot.val().recieverId ===
-                    this.props.navigation.getParam("user").id) ||
-                (childSnapshot.val().senderId ===
-                  this.props.navigation.getParam("user").id &&
-                  childSnapshot.val().recieverId === auth.currentUser.uid)
-              ) {
-                this.setState({
-                  messages: GiftedChat.append(this.state.messages, {
-                    _id: childSnapshot.key,
-                    text: childSnapshot.val().message.text,
-                    createdAt: childSnapshot.val().timeStamp,
-                    user: childSnapshot.val().user
-                  })
-                });
-              }
-            });
-          });
-      })
-      .then(() => {
-        this.setState({
-          isLoading: false
-        });
+        this.fetchMessage();
       });
 
     // database.ref("chats").once("value", snapshot => {
@@ -109,6 +82,36 @@ export default class Messages extends React.Component {
     // });
   }
 
+  fetchMessage = () => {
+    f.database()
+      .ref("chats")
+      .once("value", snapshot => {
+        snapshot.forEach(childSnapshot => {
+          console.log(childSnapshot.val());
+          if (
+            (childSnapshot.val().senderId === auth.currentUser.uid &&
+              childSnapshot.val().recieverId ===
+                this.props.navigation.getParam("user").id) ||
+            (childSnapshot.val().senderId ===
+              this.props.navigation.getParam("user").id &&
+              childSnapshot.val().recieverId === auth.currentUser.uid)
+          ) {
+            this.setState({
+              messages: GiftedChat.append(this.state.messages, {
+                _id: childSnapshot.key,
+                text: childSnapshot.val().message.text,
+                createdAt: childSnapshot.val().timeStamp,
+                user: childSnapshot.val().user
+              })
+            });
+          }
+        });
+        this.setState({
+          isLoading: false
+        });
+      });
+  };
+
   onSend(messages) {
     const OriginalMessage = Object.assign({}, messages[0]);
     const message = {
@@ -130,6 +133,32 @@ export default class Messages extends React.Component {
           .child(this.props.navigation.getParam("user").id)
           .update({
             shortMessage: message.text
+          });
+      })
+      .then(() => {
+        f.database()
+          .ref("chats")
+          .on("child_added", snapshot => {
+            snapshot.forEach(childSnapshot => {
+              console.log(childSnapshot.val());
+              if (
+                (childSnapshot.val().senderId === auth.currentUser.uid &&
+                  childSnapshot.val().recieverId ===
+                    this.props.navigation.getParam("user").id) ||
+                (childSnapshot.val().senderId ===
+                  this.props.navigation.getParam("user").id &&
+                  childSnapshot.val().recieverId === auth.currentUser.uid)
+              ) {
+                this.setState({
+                  messages: GiftedChat.append(this.state.messages, {
+                    _id: childSnapshot.key,
+                    text: childSnapshot.val().message.text,
+                    createdAt: childSnapshot.val().timeStamp,
+                    user: childSnapshot.val().user
+                  })
+                });
+              }
+            });
           });
       });
   }
@@ -154,7 +183,6 @@ export default class Messages extends React.Component {
             enabled={true}
             style={{ width: "100%", flex: 1 }}
           >
-            {console.log(this.state)}
             <View
               style={{
                 width: "100%",

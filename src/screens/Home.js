@@ -69,7 +69,6 @@ class Home extends Component {
                 flexDirection: "row"
               }}
             >
-              {console.log(this.props)}
               <View
                 style={{
                   width: "20%",
