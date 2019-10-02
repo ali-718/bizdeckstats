@@ -22,6 +22,8 @@ import {
 import styles from "../../constants/styles";
 import * as f from "firebase";
 import { connect } from "react-redux";
+import * as Permissions from "expo-permissions";
+import { Notifications } from "expo";
 
 class Home extends Component {
   state = {
@@ -29,7 +31,39 @@ class Home extends Component {
     users: []
   };
 
+  registerNotification = async () => {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== "granted") {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== "granted") {
+      return;
+    }
+
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync();
+
+    f.database()
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .update({
+        expoPushToken: token
+      });
+  };
+
   componentDidMount() {
+    this.registerNotification();
     f.database()
       .ref("users")
       .once("value")

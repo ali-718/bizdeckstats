@@ -15,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import styles from "../../constants/styles";
 import { ScrollView } from "react-native-gesture-handler";
 import * as f from "firebase";
+import { Notifications } from "expo";
 
 export default class Edit extends Component {
   state = {
@@ -24,12 +25,12 @@ export default class Edit extends Component {
     uploading: false
   };
 
-  checkPermissions = () => {
-    const { status } = Permissions.askAsync(Permissions.CAMERA);
+  checkPermissions = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({
       Camera: status
     });
-    const { statusRoll } = Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { statusRoll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({
       CameraRoll: statusRoll
     });

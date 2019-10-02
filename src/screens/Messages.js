@@ -22,6 +22,22 @@ export default class Messages extends React.Component {
     isLoading: true
   };
 
+  sendPushNotification = (title, message, token) => {
+    fetch(`https://exp.host/--/api/v2/push/send`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        title: title,
+        body: message,
+        sound: "default",
+        to: token
+      })
+    });
+  };
+
   componentDidMount() {
     // BackHandler.addEventListener("hardwareBackPress", () => {
     //   this.props.navigation.replace("Home");
@@ -88,7 +104,7 @@ export default class Messages extends React.Component {
       .ref("chats")
       .on("child_added", childSnapshot => {
         // snapshot.forEach(childSnapshot => {
-        console.log(childSnapshot.val());
+        // console.log(childSnapshot.val());
         if (
           (childSnapshot.val().senderId === auth.currentUser.uid &&
             childSnapshot.val().recieverId ===
@@ -165,6 +181,20 @@ export default class Messages extends React.Component {
             shortMessage: message.text
           });
       });
+
+    f.database()
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .once("value")
+      .then(snapshot => {
+        this.sendPushNotification(
+          snapshot.val().name,
+          OriginalMessage.text,
+          this.props.navigation.getParam("user").expoPushToken
+        );
+      });
+
+    console.log(this.props.navigation.getParam("user"));
   }
 
   render() {

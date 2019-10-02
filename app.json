@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "instagram clone",
+    "name": "chatapp",
     "slug": "instagram-clone",
     "privacy": "public",
     "sdkVersion": "34.0.0",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/logo.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
