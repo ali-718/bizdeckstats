@@ -166,6 +166,7 @@ class Home extends Component {
                             note
                           >
                             {item.shortMessage}
+                            {item.shortMessage.length < 35 ? "\n" : ""}
                           </Text>
                         </Body>
                         <Right>

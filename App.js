@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import store from "./store";
 import Splashscreen from "./src/screens/Splashscreen";
 import Settings from "./src/screens/Settings";
+import Complain from "./src/screens/Complain";
 
 export default class App extends Component {
   render() {
@@ -43,6 +44,9 @@ const Stack = createStackNavigator(
     },
     Settings: {
       screen: Settings
+    },
+    Complain: {
+      screen: Complain
     }
   },
   {
