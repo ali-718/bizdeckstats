@@ -33,7 +33,12 @@ export default class Messages extends React.Component {
         title: title,
         body: message,
         sound: "default",
-        to: token
+        to: token,
+        badge: 1,
+        _displayInForeground: true,
+        data: {
+          name: "ali haider"
+        }
       })
     });
   };
@@ -99,7 +104,6 @@ export default class Messages extends React.Component {
   }
 
   fetchMessage = () => {
-    2;
     f.database()
       .ref("chats")
       .on("child_added", childSnapshot => {
@@ -127,6 +131,10 @@ export default class Messages extends React.Component {
           isLoading: false
         });
       });
+
+    this.setState({
+      isLoading: false
+    });
     // .then(() => {
     //   f.database()
     //     .ref("chats")
@@ -171,7 +179,8 @@ export default class Messages extends React.Component {
         senderId: auth.currentUser.uid,
         recieverId: this.props.navigation.getParam("user").id,
         user: OriginalMessage.user,
-        timeStamp: new Date().getTime()
+        timeStamp: new Date().getTime(),
+        status: false
       })
       .then(() => {
         f.database()

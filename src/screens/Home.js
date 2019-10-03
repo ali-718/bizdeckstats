@@ -31,6 +31,21 @@ class Home extends Component {
     users: []
   };
 
+  showStatus = id => {
+    f.database()
+      .ref("chats")
+      .on("value", snapshot => {
+        snapshot.forEach(item => {
+          if (item.senderId == id) {
+            console.log(item.status);
+            return true;
+          } else {
+            console.log("nothing found");
+          }
+        });
+      });
+  };
+
   registerNotification = async () => {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
@@ -69,7 +84,8 @@ class Home extends Component {
       .once("value")
       .then(snapshot => {
         snapshot.forEach(res => {
-          this.state.users.push({ ...res.val(), id: res.key });
+          this.showStatus(res.key);
+          this.state.users.push({ ...res.val(), id: res.key, status: false });
         });
         this.setState({
           isLoading: false
@@ -146,7 +162,12 @@ class Home extends Component {
                           <Text style={{ fontWeight: "bold" }}>
                             {item.name}
                           </Text>
-                          <Text note>{item.shortMessage}</Text>
+                          <Text
+                            style={{ fontWeight: this.showStatus(item.id) }}
+                            note
+                          >
+                            {item.shortMessage}
+                          </Text>
                         </Body>
                         <Right>
                           <Text>3:43 pm</Text>
