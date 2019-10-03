@@ -128,8 +128,7 @@ class Home extends Component {
               >
                 <Icon
                   onPress={() => this.props.navigation.toggleDrawer()}
-                  name="bars"
-                  type="FontAwesome5"
+                  name="ios-menu"
                   style={{ color: "black" }}
                 />
               </View>

@@ -14,6 +14,18 @@ import { Avatar } from "react-native-elements";
 import OutStyles from "../../constants/styles";
 import { connect } from "react-redux";
 import { LogoutUser } from "../actions/userAction";
+import {
+  Container,
+  Header,
+  Content,
+  Button,
+  ListItem,
+  Icon,
+  Left,
+  Body,
+  Right,
+  Switch
+} from "native-base";
 
 const LogoutButton = props => {
   props.navigation.navigate("Login");
@@ -73,7 +85,7 @@ const NavigationOptions = props => (
           <Text style={{ color: "white" }}>Logout</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          //   onPress={() => props.navigation.navigate("Settings")}
+          onPress={() => props.navigation.navigate("Settings")}
           style={{
             width: 100,
             height: 40,
@@ -88,7 +100,42 @@ const NavigationOptions = props => (
       </View>
     </View>
     <ScrollView style={{ flex: 1 }}>
-      <DrawerNavigatorItems {...props} />
+      <View
+        style={{
+          width: "100%",
+          justifyContent: "center",
+          marginTop: 20
+        }}
+      >
+        <ListItem
+          onPress={() => props.navigation.navigate("Home")}
+          icon
+          style={{ borderBottomWidth: 0 }}
+        >
+          <Left>
+            <Button style={{ backgroundColor: "orange" }}>
+              <Icon active name="ios-home" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0 }}>
+            <Text style={{ fontSize: 18 }}>Home</Text>
+          </Body>
+        </ListItem>
+        <ListItem
+          onPress={() => props.navigation.navigate("Edit")}
+          icon
+          style={{ borderBottomWidth: 0 }}
+        >
+          <Left>
+            <Button style={{ backgroundColor: "red" }}>
+              <Icon active name="file-contract" type="FontAwesome5" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0 }}>
+            <Text style={{ fontSize: 18 }}>Complain</Text>
+          </Body>
+        </ListItem>
+      </View>
     </ScrollView>
   </SafeAreaView>
 );

@@ -11,6 +11,8 @@ import NavigationOptions from "./src/components/Drawer";
 import Messages from "./src/screens/Messages";
 import { Provider } from "react-redux";
 import store from "./store";
+import Splashscreen from "./src/screens/Splashscreen";
+import Settings from "./src/screens/Settings";
 
 export default class App extends Component {
   render() {
@@ -35,11 +37,17 @@ const Stack = createStackNavigator(
     },
     Chat: {
       screen: Messages
+    },
+    Splashscreen: {
+      screen: Splashscreen
+    },
+    Settings: {
+      screen: Settings
     }
   },
   {
     headerMode: "none",
-    initialRouteName: "Login"
+    initialRouteName: "Splashscreen"
   }
 );
 

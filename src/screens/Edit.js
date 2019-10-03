@@ -232,11 +232,40 @@ export default class Edit extends Component {
                       user: { ...this.state.user, description: val }
                     })
                   }
+                  style={{ paddingTop: 10 }}
                   value={this.state.user.description}
                   rowSpan={5}
                   bordered
                   placeholder="Description..."
                 />
+              </View>
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Textarea
+                  maxLength={150}
+                  onChangeText={val =>
+                    this.setState({
+                      user: { ...this.state.user, address: val }
+                    })
+                  }
+                  style={{ paddingTop: 10 }}
+                  value={this.state.user.address}
+                  rowSpan={5}
+                  bordered
+                  placeholder="Address..."
+                />
+              </View>
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Item floatingLabel>
+                  <Label>CNIC</Label>
+                  <Input
+                    onChangeText={val =>
+                      this.setState({ user: { ...this.state.user, CNIC: val } })
+                    }
+                    value={this.state.user.CNIC}
+                    placeholder="Name...!"
+                    keyboardType="number-pad"
+                  />
+                </Item>
               </View>
               <View
                 style={{
