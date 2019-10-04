@@ -8,7 +8,8 @@ import {
   Label,
   Textarea,
   Spinner,
-  Picker
+  Picker,
+  Right
 } from "native-base";
 import styles from "../../constants/styles";
 
@@ -69,12 +70,6 @@ export default class Complain extends Component {
             >
               <Picker
                 mode="dropdown"
-                iosIcon={
-                  <Icon
-                    name="arrow-dropdown-circle"
-                    style={{ color: "#007aff", fontSize: 25 }}
-                  />
-                }
                 placeholder="Select your Options"
                 placeholderStyle={{ color: "black" }}
                 placeholderIconColor="#007aff"
@@ -87,6 +82,12 @@ export default class Complain extends Component {
                 <Picker.Item label="Credit Card" value="key3" />
                 <Picker.Item label="Net Banking" value="key4" />
               </Picker>
+              <Right>
+                <Icon
+                  name="arrow-dropdown-circle"
+                  style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
+                />
+              </Right>
             </Item>
           </View>
           <View style={{ width: "80%", marginTop: 50, alignSelf: "center" }}>
@@ -118,12 +119,6 @@ export default class Complain extends Component {
             >
               <Picker
                 mode="dropdown"
-                iosIcon={
-                  <Icon
-                    name="arrow-dropdown-circle"
-                    style={{ color: "#007aff", fontSize: 25 }}
-                  />
-                }
                 placeholder="Select your Department"
                 placeholderStyle={{ color: "black" }}
                 placeholderIconColor="#007aff"
@@ -136,6 +131,12 @@ export default class Complain extends Component {
                 <Picker.Item label="Credit Card" value="key3" />
                 <Picker.Item label="Net Banking" value="key4" />
               </Picker>
+              <Right>
+                <Icon
+                  name="arrow-dropdown-circle"
+                  style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
+                />
+              </Right>
             </Item>
           </View>
           <View

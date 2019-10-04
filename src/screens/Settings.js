@@ -65,45 +65,6 @@ class Settings extends Component {
               <Icon active name="arrow-forward" />
             </Right>
           </ListItem>
-          <ListItem
-            onPress={() => this.props.navigation.navigate("Companies")}
-            icon
-          >
-            <Left>
-              <Button style={{ backgroundColor: "blue" }}>
-                <Icon
-                  active
-                  name="school"
-                  type="FontAwesome5"
-                  style={{ fontSize: 15 }}
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Change Company</Text>
-            </Body>
-            <Right>
-              <Icon active name="arrow-forward" />
-            </Right>
-          </ListItem>
-          <ListItem onPress={() => this.openCompanyDailog()} icon>
-            <Left>
-              <Button style={{ backgroundColor: "orange" }}>
-                <Icon
-                  active
-                  name="office-building"
-                  type="MaterialCommunityIcons"
-                  style={{ fontSize: 20 }}
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Add Company</Text>
-            </Body>
-            <Right>
-              <Icon active name="arrow-forward" />
-            </Right>
-          </ListItem>
         </View>
       </SafeAreaView>
     );

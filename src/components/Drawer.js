@@ -135,6 +135,20 @@ const NavigationOptions = props => (
             <Text style={{ fontSize: 18 }}>Complain</Text>
           </Body>
         </ListItem>
+        <ListItem
+          onPress={() => props.navigation.navigate("Complain")}
+          icon
+          style={{ borderBottomWidth: 0 }}
+        >
+          <Left>
+            <Button style={{ backgroundColor: "green" }}>
+              <Icon active name="list" type="Entypo" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0 }}>
+            <Text style={{ fontSize: 18 }}>Complain Status</Text>
+          </Body>
+        </ListItem>
       </View>
     </ScrollView>
   </SafeAreaView>

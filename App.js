@@ -14,6 +14,7 @@ import store from "./store";
 import Splashscreen from "./src/screens/Splashscreen";
 import Settings from "./src/screens/Settings";
 import Complain from "./src/screens/Complain";
+import ComplainStatus from "./src/screens/ComplainStatus";
 
 export default class App extends Component {
   render() {
@@ -47,11 +48,14 @@ const Stack = createStackNavigator(
     },
     Complain: {
       screen: Complain
+    },
+    ComplainStatus: {
+      screen: ComplainStatus
     }
   },
   {
     headerMode: "none",
-    initialRouteName: "Splashscreen"
+    initialRouteName: "ComplainStatus"
   }
 );
 
