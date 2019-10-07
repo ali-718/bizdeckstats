@@ -22,7 +22,7 @@ export default class Edit extends Component {
     user: {},
     ImageSelected: false,
     ImageUri: "",
-    uploading: false
+    uploading: true
   };
 
   checkPermissions = async () => {
@@ -108,7 +108,7 @@ export default class Edit extends Component {
       .child(f.auth().currentUser.uid)
       .once("value")
       .then(res => {
-        this.setState({ user: res.val() });
+        this.setState({ user: res.val(), uploading: false });
       });
   }
 

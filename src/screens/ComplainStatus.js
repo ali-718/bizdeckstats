@@ -79,9 +79,9 @@ export default class ComplainStatus extends Component {
                   marginTop: 10,
                   alignSelf: "center",
                   paddingLeft: 10,
-                  borderColor: "blue",
+                  borderColor: "gainsboro",
                   borderStyle: "solid",
-                  borderWidth: 0.5,
+                  borderWidth: 0.3,
                   paddingRight: 10,
                   paddingBottom: 10
                 }}

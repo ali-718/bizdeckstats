@@ -65,6 +65,19 @@ class Settings extends Component {
               <Icon active name="arrow-forward" />
             </Right>
           </ListItem>
+          <ListItem onPress={() => this.props.navigation.navigate("Edit")} icon>
+            <Left>
+              <Button style={{ backgroundColor: "orange" }}>
+                <Icon active name="verified-user" type="MaterialIcons" />
+              </Button>
+            </Left>
+            <Body>
+              <Text>Edit Profile</Text>
+            </Body>
+            <Right>
+              <Icon active name="arrow-forward" />
+            </Right>
+          </ListItem>
         </View>
       </SafeAreaView>
     );

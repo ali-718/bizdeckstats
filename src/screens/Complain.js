@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, SafeAreaView, ScrollView } from "react-native";
+import { Text, View, SafeAreaView, ScrollView, Platform } from "react-native";
 import {
   Input,
   Item,
@@ -82,12 +82,15 @@ export default class Complain extends Component {
                 <Picker.Item label="Credit Card" value="key3" />
                 <Picker.Item label="Net Banking" value="key4" />
               </Picker>
-              <Right>
-                <Icon
-                  name="arrow-dropdown-circle"
-                  style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
-                />
-              </Right>
+
+              {Platform.OS == "android" ? null : (
+                <Right>
+                  <Icon
+                    name="arrow-dropdown-circle"
+                    style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
+                  />
+                </Right>
+              )}
             </Item>
           </View>
           <View style={{ width: "80%", marginTop: 50, alignSelf: "center" }}>
@@ -131,12 +134,14 @@ export default class Complain extends Component {
                 <Picker.Item label="Credit Card" value="key3" />
                 <Picker.Item label="Net Banking" value="key4" />
               </Picker>
-              <Right>
-                <Icon
-                  name="arrow-dropdown-circle"
-                  style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
-                />
-              </Right>
+              {Platform.OS == "android" ? null : (
+                <Right>
+                  <Icon
+                    name="arrow-dropdown-circle"
+                    style={{ color: "#007aff", fontSize: 25, marginRight: 20 }}
+                  />
+                </Right>
+              )}
             </Item>
           </View>
           <View
