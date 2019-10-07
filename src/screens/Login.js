@@ -93,7 +93,8 @@ class Login extends Component {
                   .set({
                     name: res.user.providerData[0].displayName,
                     email: res.user.providerData[0].email,
-                    avatar: res.additionalUserInfo.profile.picture.data.url
+                    avatar: res.additionalUserInfo.profile.picture.data.url,
+                    status: "user"
                   })
                   .then(() => {
                     this.props.LoginAction(item.val());

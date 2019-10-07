@@ -15,15 +15,54 @@ import {
 import { connect } from "react-redux";
 import styles from "../../constants/styles";
 import { LoginAction } from "../actions/userAction";
+import DialogInput from "react-native-dialog-input";
+import * as f from "firebase";
 
 class Settings extends Component {
   state = {
     isDialogVisible: false
   };
 
+  openCompanyDailog = () => {
+    this.showDialog();
+  };
+
+  showDialog = val => {
+    this.setState({
+      isDialogVisible: true
+    });
+  };
+
+  closeDailog = () => {
+    this.setState({
+      isDialogVisible: false
+    });
+  };
+
+  makeAdmin = inputText => {
+    f.database()
+      .ref("keys")
+      .on("value", res => {
+        console.log(Object.values(res.val()));
+      });
+  };
+
   render() {
     return (
       <SafeAreaView style={[styles.SafeArea, { flex: 1 }]}>
+        {/* Admin Dailog starts */}
+        <DialogInput
+          isDialogVisible={this.state.isDialogVisible}
+          title={"Enter Pin"}
+          submitInput={inputText => {
+            this.makeAdmin(inputText);
+            // console.log(inputText);
+          }}
+          closeDialog={() => {
+            this.closeDailog();
+          }}
+        ></DialogInput>
+        {/* Admin Dailog ends */}
         <View
           style={{
             width: "100%",
@@ -65,14 +104,17 @@ class Settings extends Component {
               <Icon active name="arrow-forward" />
             </Right>
           </ListItem>
-          <ListItem onPress={() => this.props.navigation.navigate("Edit")} icon>
+          <ListItem
+            onPress={() => this.setState({ isDialogVisible: true })}
+            icon
+          >
             <Left>
               <Button style={{ backgroundColor: "orange" }}>
                 <Icon active name="verified-user" type="MaterialIcons" />
               </Button>
             </Left>
             <Body>
-              <Text>Edit Profile</Text>
+              <Text>Become Admin</Text>
             </Body>
             <Right>
               <Icon active name="arrow-forward" />

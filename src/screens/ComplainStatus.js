@@ -68,7 +68,9 @@ export default class ComplainStatus extends Component {
                 />
               </View>
               <View style={{ width: "80%" }}>
-                <Text style={{ color: "black", fontSize: 22 }}>BizIntel</Text>
+                <Text style={{ color: "black", fontSize: 22 }}>
+                  Complain Status
+                </Text>
               </View>
             </View>
             <ScrollView style={{ width: "100%", flex: 1 }}>
