@@ -103,7 +103,6 @@ class Settings extends Component {
       <SafeAreaView style={[styles.SafeArea, { flex: 1 }]}>
         {/* Admin Dailog starts */}
         <DialogInput
-          textInputProps={{ keyboardType: "number-pad" }}
           isDialogVisible={this.state.isDialogVisible}
           title={"Enter Pin"}
           submitInput={inputText => {

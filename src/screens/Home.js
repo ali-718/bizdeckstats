@@ -17,18 +17,22 @@ import {
   Right,
   Thumbnail,
   Icon,
-  Spinner
+  Spinner,
+  Picker
 } from "native-base";
 import styles from "../../constants/styles";
 import * as f from "firebase";
 import { connect } from "react-redux";
 import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
+import ModalDropdown from "react-native-modal-dropdown";
 
 class Home extends Component {
   state = {
     isLoading: true,
-    users: []
+    users: [],
+    PressLong: "",
+    backgroundColor: ""
   };
 
   showStatus = id => {
@@ -130,9 +134,28 @@ class Home extends Component {
                   style={{ color: "black" }}
                 />
               </View>
-              <View style={{ width: "80%" }}>
+              <View
+                style={{ width: this.state.PressLong == "" ? "80%" : "60%" }}
+              >
                 <Text style={{ color: "black", fontSize: 22 }}>BizIntel</Text>
               </View>
+              {this.state.PressLong !== "" ? (
+                <TouchableOpacity
+                  style={{
+                    width: "20%",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                  onPress={() => alert("this is user is blocked")}
+                >
+                  <Icon
+                    name="block"
+                    type="Entypo"
+                    style={{ color: "red", fontSize: 18 }}
+                  />
+                  <Text style={{ fontSize: 10 }}>Block</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
             <ScrollView style={{ width: "100%", flex: 1 }}>
               <List style={{ marginTop: 10 }}>
@@ -140,12 +163,27 @@ class Home extends Component {
                   if (item.id !== f.auth().currentUser.uid) {
                     return (
                       <ListItem
+                        onLongPress={() => {
+                          this.setState({
+                            PressLong: item.id,
+                            backgroundColor: "gray"
+                          });
+                          // alert(item.id)
+                        }}
                         key={item.id}
-                        onPress={() =>
-                          this.props.navigation.navigate("Chat", {
-                            user: item
-                          })
-                        }
+                        onPress={() => {
+                          if (this.state.PressLong == "") {
+                            this.props.navigation.navigate("Chat", {
+                              user: item
+                            });
+                          } else {
+                            this.props.navigation.replace("Home");
+                            this.setState({
+                              PressLong: "",
+                              backgroundColor: ""
+                            });
+                          }
+                        }}
                         avatar
                       >
                         <Left>
@@ -155,7 +193,12 @@ class Home extends Component {
                             }}
                           />
                         </Left>
-                        <Body>
+                        <Body
+                          style={{
+                            backgroundColor:
+                              this.state.PressLong == item.id ? "grey" : ""
+                          }}
+                        >
                           <Text style={{ fontWeight: "bold" }}>
                             {item.name}
                           </Text>
@@ -167,7 +210,12 @@ class Home extends Component {
                             {item.shortMessage.length < 35 ? "\n" : ""}
                           </Text>
                         </Body>
-                        <Right>
+                        <Right
+                          style={{
+                            backgroundColor:
+                              this.state.PressLong == item.id ? "grey" : ""
+                          }}
+                        >
                           <Text>3:43 pm</Text>
                         </Right>
                       </ListItem>
