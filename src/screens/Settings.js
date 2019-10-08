@@ -67,32 +67,34 @@ class Settings extends Component {
   };
 
   makeAdmin = inputText => {
+    let value = false;
+    console.log(f.auth().currentUser.uid);
     f.database()
       .ref("keys")
       .on("value", res => {
-        let value = false;
         Object.values(res.val()).map(item => {
           if (item == inputText) {
             value = true;
           }
-        });
 
-        if (value) {
-          this.setState({
-            isDialogVisible: false
-          });
-          setTimeout(() => {
-            this.showAlert();
+          if (value) {
             f.database()
               .ref("users")
               .child(f.auth().currentUser.uid)
               .update({
                 status: "admin"
               });
-          }, 800);
-        } else {
-          alert("Wrong Pin...!");
-        }
+            this.setState({
+              isDialogVisible: false
+            });
+
+            setTimeout(() => {
+              this.showAlert();
+            }, 800);
+          } else {
+            alert("Wrong Pin...!");
+          }
+        });
       });
   };
 
@@ -101,6 +103,7 @@ class Settings extends Component {
       <SafeAreaView style={[styles.SafeArea, { flex: 1 }]}>
         {/* Admin Dailog starts */}
         <DialogInput
+          textInputProps={{ keyboardType: "number-pad" }}
           isDialogVisible={this.state.isDialogVisible}
           title={"Enter Pin"}
           submitInput={inputText => {
@@ -153,22 +156,24 @@ class Settings extends Component {
               <Icon active name="arrow-forward" />
             </Right>
           </ListItem>
-          <ListItem
-            onPress={() => this.setState({ isDialogVisible: true })}
-            icon
-          >
-            <Left>
-              <Button style={{ backgroundColor: "orange" }}>
-                <Icon active name="verified-user" type="MaterialIcons" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Become Admin</Text>
-            </Body>
-            <Right>
-              <Icon active name="arrow-forward" />
-            </Right>
-          </ListItem>
+          {this.props.user.user.status == "admin" ? null : (
+            <ListItem
+              onPress={() => this.setState({ isDialogVisible: true })}
+              icon
+            >
+              <Left>
+                <Button style={{ backgroundColor: "orange" }}>
+                  <Icon active name="verified-user" type="MaterialIcons" />
+                </Button>
+              </Left>
+              <Body>
+                <Text>Become Admin</Text>
+              </Body>
+              <Right>
+                <Icon active name="arrow-forward" />
+              </Right>
+            </ListItem>
+          )}
         </View>
         {/* Error Login starts */}
         <AwesomeAlert
@@ -187,19 +192,14 @@ class Settings extends Component {
             f.database()
               .ref("users")
               .child(f.auth().currentUser.uid)
-              .update(this.state.user)
-              .then(() => {
-                f.database()
-                  .ref("users")
-                  .child(f.auth().currentUser.uid)
-                  .once("value")
-                  .then(item => {
-                    if (item.val()) {
-                      this.props.LoginAction(item.val());
-                      console.log("admin approved");
-                    }
-                  });
+              .once("value")
+              .then(item => {
+                if (item.val()) {
+                  this.props.LoginAction(item.val());
+                  console.log("admin approved");
+                }
               });
+
             this.hideAlert();
           }}
         />
