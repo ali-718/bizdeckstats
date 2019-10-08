@@ -6,55 +6,95 @@ import Logo from "../assets/logo.png";
 import * as f from "firebase";
 import { connect } from "react-redux";
 import { LoginAction } from "../actions/userAction";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 class Login extends Component {
   state = {
     Email: "",
     Password: "",
-    isLoading: false
+    isLoading: false,
+    showAlert: false,
+    showAlert2: false
   };
 
   SimpleLogin = () => {
     this.setState({
       isLoading: true
     });
-    f.auth()
-      .signInWithEmailAndPassword(this.state.Email, this.state.Password)
-      .then(user => {
-        console.log(user);
-        f.database()
-          .ref("users")
-          .child(user.user.uid)
-          .once("value")
-          .then(item => {
-            if (item.val()) {
-              console.log("res.val() is availaible");
-              this.props.LoginAction(item.val());
-              this.props.navigation.navigate("Edit", { fromLogin: true });
-              this.setState({
-                isLoading: false
-              });
-            } else {
-              f.database()
-                .ref("users")
-                .child(user.user.uid)
-                .set({
-                  name: user.user.providerData[0].displayName,
-                  email: user.user.providerData[0].email
-                })
-                .then(() => {
-                  this.props.LoginAction(item.val());
-                  console.log("res.val() not working");
-                  console.log("user added succcessfully");
-                  this.props.navigation.navigate("Edit");
-                  this.setState({
-                    isLoading: false
-                  });
+
+    if (this.state.Email !== "" && this.state.Password !== "") {
+      f.auth()
+        .signInWithEmailAndPassword(this.state.Email, this.state.Password)
+        .then(user => {
+          console.log(user);
+          f.database()
+            .ref("users")
+            .child(user.user.uid)
+            .once("value")
+            .then(item => {
+              if (item.val()) {
+                console.log("res.val() is availaible");
+                this.props.LoginAction(item.val());
+                this.props.navigation.navigate("Edit", { fromLogin: true });
+                this.setState({
+                  isLoading: false
                 });
-            }
+              } else {
+                f.database()
+                  .ref("users")
+                  .child(user.user.uid)
+                  .set({
+                    name: user.user.providerData[0].displayName,
+                    email: user.user.providerData[0].email
+                  })
+                  .then(() => {
+                    this.props.LoginAction(item.val());
+                    console.log("res.val() not working");
+                    console.log("user added succcessfully");
+                    this.props.navigation.navigate("Edit");
+                    this.setState({
+                      isLoading: false
+                    });
+                  });
+              }
+            });
+        })
+        .catch(e => {
+          this.setState({
+            isLoading: false
           });
-      })
-      .catch(e => console.log(e));
+          this.showAlert();
+        });
+    } else {
+      this.setState({
+        isLoading: false
+      });
+      this.showAlert2();
+    }
+  };
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
+
+  showAlert2 = () => {
+    this.setState({
+      showAlert2: true
+    });
+  };
+
+  hideAlert2 = () => {
+    this.setState({
+      showAlert2: false
+    });
   };
 
   FacebookLogin = async () => {
@@ -215,6 +255,44 @@ class Login extends Component {
             <Spinner color="blue" style={{ marginTop: 20 }} />
           ) : null}
         </View>
+
+        {/* Error Login starts */}
+        <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Error"
+          message="Wrong email or password!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="red"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+        />
+        {/* Error login fails */}
+
+        {/* Error fill all fields starts */}
+        <AwesomeAlert
+          show={this.state.showAlert2}
+          showProgress={false}
+          title="Error"
+          message="Please fill all fields...!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="red"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            this.hideAlert2();
+          }}
+        />
+        {/* Error fill all fields starts */}
       </View>
     );
   }

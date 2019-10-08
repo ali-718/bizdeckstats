@@ -55,7 +55,7 @@ const Stack = createStackNavigator(
   },
   {
     headerMode: "none",
-    initialRouteName: "Settings"
+    initialRouteName: "Splashscreen"
   }
 );
 

@@ -17,10 +17,37 @@ import styles from "../../constants/styles";
 import { LoginAction } from "../actions/userAction";
 import DialogInput from "react-native-dialog-input";
 import * as f from "firebase";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 class Settings extends Component {
   state = {
-    isDialogVisible: false
+    isDialogVisible: false,
+    showAlert: false,
+    showAlert2: false
+  };
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
+
+  showAlert2 = () => {
+    this.setState({
+      showAlert2: true
+    });
+  };
+
+  hideAlert2 = () => {
+    this.setState({
+      showAlert2: false
+    });
   };
 
   openCompanyDailog = () => {
@@ -43,7 +70,29 @@ class Settings extends Component {
     f.database()
       .ref("keys")
       .on("value", res => {
-        console.log(Object.values(res.val()));
+        let value = false;
+        Object.values(res.val()).map(item => {
+          if (item == inputText) {
+            value = true;
+          }
+        });
+
+        if (value) {
+          this.setState({
+            isDialogVisible: false
+          });
+          setTimeout(() => {
+            this.showAlert();
+            f.database()
+              .ref("users")
+              .child(f.auth().currentUser.uid)
+              .update({
+                status: "admin"
+              });
+          }, 800);
+        } else {
+          alert("Wrong Pin...!");
+        }
       });
   };
 
@@ -121,6 +170,59 @@ class Settings extends Component {
             </Right>
           </ListItem>
         </View>
+        {/* Error Login starts */}
+        <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Congratulations!"
+          message="You are now an Admin...!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="green"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            f.database()
+              .ref("users")
+              .child(f.auth().currentUser.uid)
+              .update(this.state.user)
+              .then(() => {
+                f.database()
+                  .ref("users")
+                  .child(f.auth().currentUser.uid)
+                  .once("value")
+                  .then(item => {
+                    if (item.val()) {
+                      this.props.LoginAction(item.val());
+                      console.log("admin approved");
+                    }
+                  });
+              });
+            this.hideAlert();
+          }}
+        />
+        {/* Error login fails */}
+
+        {/* Error fill all fields starts */}
+        <AwesomeAlert
+          show={this.state.showAlert2}
+          showProgress={false}
+          title="Error"
+          message="Wrong pin...!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="red"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            this.hideAlert2();
+          }}
+        />
+        {/* Error fill all fields starts */}
       </SafeAreaView>
     );
   }

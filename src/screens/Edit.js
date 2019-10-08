@@ -15,14 +15,29 @@ import * as ImagePicker from "expo-image-picker";
 import styles from "../../constants/styles";
 import { ScrollView } from "react-native-gesture-handler";
 import * as f from "firebase";
-import { Notifications } from "expo";
+import AwesomeAlert from "react-native-awesome-alerts";
+import { connect } from "react-redux";
+import { LoginAction } from "../actions/userAction";
 
-export default class Edit extends Component {
+class Edit extends Component {
   state = {
     user: {},
     ImageSelected: false,
     ImageUri: "",
-    uploading: true
+    uploading: true,
+    showAlert2: false
+  };
+
+  showAlert2 = () => {
+    this.setState({
+      showAlert2: true
+    });
+  };
+
+  hideAlert2 = () => {
+    this.setState({
+      showAlert2: false
+    });
   };
 
   checkPermissions = async () => {
@@ -125,11 +140,20 @@ export default class Edit extends Component {
         .child(f.auth().currentUser.uid)
         .update(this.state.user)
         .then(() => {
-          this.props.navigation.replace("Home");
-          console.log("user details edited");
+          f.database()
+            .ref("users")
+            .child(f.auth().currentUser.uid)
+            .once("value")
+            .then(item => {
+              if (item.val()) {
+                this.props.LoginAction(item.val());
+                this.props.navigation.replace("Home");
+                console.log("user details edited");
+              }
+            });
         });
     } else {
-      alert("please fill all fields");
+      this.showAlert2();
     }
   };
 
@@ -293,7 +317,34 @@ export default class Edit extends Component {
             </View>
           </ScrollView>
         </SafeAreaView>
+        {/* Error fill all fields starts */}
+        <AwesomeAlert
+          show={this.state.showAlert2}
+          showProgress={false}
+          title="Error"
+          message="Please fill all fields...!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="red"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            this.hideAlert2();
+          }}
+        />
+        {/* Error fill all fields starts */}
       </KeyboardAvoidingView>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+export default connect(
+  mapStateToProps,
+  { LoginAction }
+)(Edit);

@@ -14,18 +14,12 @@ class Splashscreen extends Component {
   componentDidMount() {
     f.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log(user);
-        this.props.LoginAction({
-          name: user.providerData[0].displayName,
-          avatar: user.providerData[0].photoURL,
-          email: user.providerData[0].email
-        });
         f.database()
           .ref("users")
           .child(user.uid)
           .once("value")
           .then(item => {
-            console.log("res.val() is availaible");
+            console.log(item.val());
             this.props.LoginAction(item.val());
             this.props.navigation.navigate("Home");
           });

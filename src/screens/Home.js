@@ -39,8 +39,6 @@ class Home extends Component {
           if (item.senderId == id) {
             console.log(item.status);
             return true;
-          } else {
-            console.log("nothing found");
           }
         });
       });

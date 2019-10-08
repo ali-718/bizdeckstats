@@ -24,7 +24,8 @@ import {
   Left,
   Body,
   Right,
-  Switch
+  Switch,
+  Badge
 } from "native-base";
 
 const LogoutButton = props => {
@@ -47,15 +48,35 @@ const NavigationOptions = props => (
           backgroundColor: "white"
         }}
       >
-        <Avatar
-          size="large"
-          rounded
-          source={{
-            uri: props.user.user.avatar
-              ? props.user.user.avatar
-              : "https://via.placeholder.com/300"
-          }}
-        />
+        <View>
+          <Avatar
+            size="large"
+            rounded
+            source={{
+              uri: props.user.user.avatar
+                ? props.user.user.avatar
+                : "https://via.placeholder.com/300"
+            }}
+          />
+          {props.user.user.status == "admin" ? (
+            <Badge
+              primary
+              style={{
+                position: "absolute",
+                top: -4,
+                right: -4,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <Icon
+                name="verified"
+                type="Octicons"
+                style={{ fontSize: 15, color: "#fff" }}
+              />
+            </Badge>
+          ) : null}
+        </View>
         <Text
           style={{
             color: "black",
