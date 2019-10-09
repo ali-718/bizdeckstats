@@ -32,7 +32,16 @@ class Home extends Component {
     isLoading: true,
     users: [],
     PressLong: "",
-    backgroundColor: ""
+    backgroundColor: "",
+    blocked: false
+  };
+
+  DeleteUser = () => {
+    f.database()
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .child("deletedUsers")
+      .push(this.state.PressLong);
   };
 
   showStatus = id => {
@@ -45,6 +54,41 @@ class Home extends Component {
             return true;
           }
         });
+      });
+  };
+
+  PressLong = () => {
+    // console.log(this.state.PressLong);
+    f.database()
+      .ref("users")
+      .child(this.state.PressLong)
+      .once("value")
+      .then(res => {
+        if (res.val().authority == "block") {
+          this.setState({ blocked: true });
+        }
+      });
+  };
+
+  blockUser = () => {
+    f.database()
+      .ref("users")
+      .child(this.state.PressLong)
+      .update({ authority: "block" })
+      .then(() => {
+        alert("user blocked");
+        this.props.navigation.replace("Home");
+      });
+  };
+
+  UnblockUser = () => {
+    f.database()
+      .ref("users")
+      .child(this.state.PressLong)
+      .update({ authority: "unblock" })
+      .then(() => {
+        alert("user unblocked");
+        this.props.navigation.replace("Home");
       });
   };
 
@@ -81,18 +125,103 @@ class Home extends Component {
 
   componentDidMount() {
     this.registerNotification();
+    let filterArray = [];
     f.database()
-      .ref("users")
+      .ref("chats")
       .once("value")
       .then(snapshot => {
         snapshot.forEach(res => {
-          this.showStatus(res.key);
-          this.state.users.push({ ...res.val(), id: res.key, status: false });
+          if (res.val().senderId == f.auth().currentUser.uid) {
+            // console.log(res.val().recieverId);
+            filterArray.push(res.val().recieverId);
+          }
         });
-        this.setState({
-          isLoading: false
+      })
+      .finally(() => {
+        let uniqueSet = new Set(filterArray);
+
+        let UniqueArray = [...uniqueSet];
+        let DletedUserAvailable = false;
+
+        UniqueArray.map(item => {
+          console.log(item);
+          f.database()
+            .ref("users")
+            .child(f.auth().currentUser.uid)
+            .once("value")
+            .then(userValue => {
+              if (Object.values(userValue.val().deletedUsers).length > 0) {
+                DletedUserAvailable = true;
+              }
+            })
+            .finally(() => {
+              if (DletedUserAvailable) {
+                f.database()
+                  .ref("users")
+                  .child(f.auth().currentUser.uid)
+                  .child("deletedUsers")
+                  .once("value")
+                  .then(childItem => {
+                    Object.values(childItem.val).map(deleteUser => {
+                      if (deleteUser !== item) {
+                        console.log(`user is not deleted ${deleteUser}`);
+                        f.database()
+                          .ref("users")
+                          .child(item)
+                          .once("value")
+                          .then(res => {
+                            console.log("pushing user");
+                            this.state.users.push({
+                              ...res.val(),
+                              id: res.key,
+                              status: false
+                            });
+
+                            this.setState({
+                              isLoading: false
+                            });
+                          });
+                      }
+                    });
+                  });
+              } else {
+                f.database()
+                  .ref("users")
+                  .child(item)
+                  .once("value")
+                  .then(res => {
+                    console.log("pushing user from else");
+                    this.state.users.push({
+                      ...res.val(),
+                      id: res.key,
+                      status: false
+                    });
+
+                    this.setState({
+                      isLoading: false
+                    });
+                  });
+              }
+            });
         });
+
+        // this.setState({
+        //   isLoading: false
+        // });
       });
+
+    // f.database()
+    //   .ref("users")
+    //   .once("value")
+    //   .then(snapshot => {
+    //     snapshot.forEach(res => {
+    //       this.showStatus(res.key);
+    //       this.state.users.push({ ...res.val(), id: res.key, status: false });
+    //     });
+    //     this.setState({
+    //       isLoading: false
+    //     });
+    //   });
   }
 
   render() {
@@ -117,7 +246,6 @@ class Home extends Component {
                 height: 50,
                 backgroundColor: "white",
                 alignItems: "center",
-                justifyContent: "center",
                 flexDirection: "row"
               }}
             >
@@ -135,10 +263,47 @@ class Home extends Component {
                 />
               </View>
               <View
-                style={{ width: this.state.PressLong == "" ? "80%" : "60%" }}
+                style={{
+                  width:
+                    this.state.PressLong !== "" &&
+                    this.props.user.user.status == "admin"
+                      ? "40%"
+                      : "60%"
+                }}
               >
                 <Text style={{ color: "black", fontSize: 22 }}>BizIntel</Text>
               </View>
+              {this.state.PressLong !== "" &&
+              this.props.user.user.status == "admin" ? (
+                <TouchableOpacity
+                  style={{
+                    width: "20%",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                  onPress={() => {
+                    if (this.state.blocked) {
+                      this.UnblockUser();
+                    } else {
+                      this.blockUser();
+                    }
+                  }}
+                >
+                  <Icon
+                    name="block"
+                    type="Entypo"
+                    style={{
+                      color: this.state.blocked ? "blue" : "red",
+                      fontSize: 18
+                    }}
+                  />
+                  {this.state.blocked ? (
+                    <Text style={{ fontSize: 10 }}>Unblock</Text>
+                  ) : (
+                    <Text style={{ fontSize: 10 }}>Block</Text>
+                  )}
+                </TouchableOpacity>
+              ) : null}
               {this.state.PressLong !== "" ? (
                 <TouchableOpacity
                   style={{
@@ -146,14 +311,17 @@ class Home extends Component {
                     justifyContent: "center",
                     alignItems: "center"
                   }}
-                  onPress={() => alert("this is user is blocked")}
+                  onPress={() => this.DeleteUser()}
                 >
                   <Icon
-                    name="block"
-                    type="Entypo"
-                    style={{ color: "red", fontSize: 18 }}
+                    name="delete"
+                    type="AntDesign"
+                    style={{
+                      color: "red",
+                      fontSize: 18
+                    }}
                   />
-                  <Text style={{ fontSize: 10 }}>Block</Text>
+                  <Text style={{ fontSize: 10 }}>Delete</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -164,10 +332,15 @@ class Home extends Component {
                     return (
                       <ListItem
                         onLongPress={() => {
-                          this.setState({
-                            PressLong: item.id,
-                            backgroundColor: "gray"
-                          });
+                          if (this.state.PressLong == "") {
+                            this.setState({
+                              PressLong: item.id,
+                              backgroundColor: "gray"
+                            });
+                            this.PressLong();
+                          } else {
+                            this.props.navigation.replace("Home");
+                          }
                           // alert(item.id)
                         }}
                         key={item.id}
