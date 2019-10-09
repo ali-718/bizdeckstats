@@ -8,10 +8,16 @@ import { Icon, Spinner } from "native-base";
 
 class Splashscreen extends Component {
   state = {
-    isLoading: true
+    isLoading: true,
+    connection: ""
   };
 
   componentDidMount() {
+    this.timer = setTimeout(() => {
+      this.setState({
+        connection: "You might check your internet connection"
+      });
+    }, 6000);
     f.auth().onAuthStateChanged(user => {
       if (user) {
         f.database()
@@ -22,6 +28,7 @@ class Splashscreen extends Component {
             console.log(item.val());
             this.props.LoginAction(item.val());
             this.props.navigation.navigate("Home");
+            clearTimeout(this.timer);
           });
       } else {
         this.props.navigation.navigate("Login");
@@ -41,7 +48,10 @@ class Splashscreen extends Component {
       >
         <Image source={Logo} style={{ width: 80, height: 100 }} />
         {this.state.isLoading ? (
-          <Spinner style={{ marginTop: 20 }} color="blue" size="large" />
+          <View>
+            <Spinner style={{ marginTop: 20 }} color="blue" size="large" />
+            <Text style={{ marginTop: 20 }}>{this.state.connection}</Text>
+          </View>
         ) : null}
       </View>
     );

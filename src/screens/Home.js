@@ -196,7 +196,8 @@ class Home extends Component {
                       id: res.key,
                       status: false
                     });
-
+                  })
+                  .finally(() => {
                     this.setState({
                       isLoading: false
                     });
