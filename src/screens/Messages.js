@@ -192,6 +192,32 @@ export default class Messages extends React.Component {
 
         f.database()
           .ref("users")
+          .child(this.props.navigation.getParam("user").id)
+          .child("chats")
+          .push({
+            message,
+            senderId: auth.currentUser.uid,
+            recieverId: this.props.navigation.getParam("user").id,
+            user: OriginalMessage.user,
+            timeStamp: new Date().getTime(),
+            status: false
+          });
+
+        f.database()
+          .ref("users")
+          .child(f.auth().currentUser.uid)
+          .child("chats")
+          .push({
+            message,
+            senderId: auth.currentUser.uid,
+            recieverId: this.props.navigation.getParam("user").id,
+            user: OriginalMessage.user,
+            timeStamp: new Date().getTime(),
+            status: false
+          });
+
+        f.database()
+          .ref("users")
           .child(f.auth().currentUser.uid)
           .child("deletedUsers")
           .once("value")

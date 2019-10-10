@@ -4,7 +4,8 @@ import {
   View,
   SafeAreaView,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  BackHandler
 } from "react-native";
 import {
   Container,
@@ -33,15 +34,20 @@ class Home extends Component {
     users: [],
     PressLong: "",
     backgroundColor: "",
-    blocked: false
+    blocked: false,
+    chats: []
   };
 
   DeleteUser = () => {
-    f.database()
-      .ref("users")
-      .child(f.auth().currentUser.uid)
-      .child("deletedUsers")
-      .push(this.state.PressLong);
+    this.state.chats.map(item => {
+      console.log(item._id);
+      f.database()
+        .ref("users")
+        .child(f.auth().currentUser.uid)
+        .child("chats")
+        .child(item._id)
+        .remove();
+    });
   };
 
   showStatus = id => {
@@ -57,7 +63,7 @@ class Home extends Component {
       });
   };
 
-  PressLong = () => {
+  PressLong = userId => {
     // console.log(this.state.PressLong);
     f.database()
       .ref("users")
@@ -68,6 +74,34 @@ class Home extends Component {
           this.setState({ blocked: true });
         }
       });
+
+    f.database()
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .child("chats")
+      .once("value")
+      .then(res => {
+        res.forEach(childSnapshot => {
+          if (
+            (childSnapshot.val().senderId === f.auth().currentUser.uid &&
+              childSnapshot.val().recieverId === userId) ||
+            (childSnapshot.val().senderId === userId &&
+              childSnapshot.val().recieverId === f.auth().currentUser.uid)
+          ) {
+            console.log("found chats");
+            this.state.chats.push({
+              _id: childSnapshot.key,
+              text: childSnapshot.val().message.text,
+              createdAt: childSnapshot.val().timeStamp,
+              user: childSnapshot.val().user
+            });
+          }
+        });
+      });
+
+    // setInterval(() => {
+    //   console.log(this.state);
+    // }, 1000);
   };
 
   blockUser = () => {
@@ -124,10 +158,38 @@ class Home extends Component {
   };
 
   componentDidMount() {
+    BackHandler.addEventListener("hardwareBackPress", () => {
+      return true;
+    });
     this.registerNotification();
     let filterArray = [];
+
+    // f.database()
+    //   .ref("chats")
+    //   .once("value")
+    //   .then(item => {
+    //     item.forEach(data => {
+    //       this.state.chats.push({
+    //         ...data.val(),
+    //         id: data.key
+    //       });
+    //     });
+    //   });
+
     f.database()
-      .ref("chats")
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .once("value")
+      .then(res => {
+        this.setState({
+          userProfile: { ...res.val(), id: res.key }
+        });
+      });
+
+    f.database()
+      .ref("users")
+      .child(f.auth().currentUser.uid)
+      .child("chats")
       .once("value")
       .then(snapshot => {
         snapshot.forEach(res => {
@@ -201,7 +263,6 @@ class Home extends Component {
               alignItems: "center"
             }}
           >
-            {console.log(this.state)}
             <Spinner color="blue" size="large" />
           </View>
         ) : (
@@ -291,6 +352,7 @@ class Home extends Component {
                 </TouchableOpacity>
               ) : null}
             </View>
+            {console.log(this.state)}
             <ScrollView style={{ width: "100%", flex: 1 }}>
               <List style={{ marginTop: 10 }}>
                 {this.state.users.map(item => {
@@ -303,7 +365,8 @@ class Home extends Component {
                               PressLong: item.id,
                               backgroundColor: "gray"
                             });
-                            this.PressLong();
+
+                            this.PressLong(item.id);
                           } else {
                             this.props.navigation.replace("Home");
                           }
