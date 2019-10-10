@@ -189,6 +189,25 @@ export default class Messages extends React.Component {
           .update({
             shortMessage: message.text
           });
+
+        f.database()
+          .ref("users")
+          .child(f.auth().currentUser.uid)
+          .child("deletedUsers")
+          .once("value")
+          .then(res => {
+            res.forEach(item => {
+              console.log(`data ${item.val()}`);
+              if (item.val() == this.props.navigation.getParam("user").id) {
+                f.database()
+                  .ref("users")
+                  .child(f.auth().currentUser.uid)
+                  .child("deletedUsers")
+                  .child(item.key)
+                  .remove();
+              }
+            });
+          });
       });
 
     f.database()
@@ -202,8 +221,6 @@ export default class Messages extends React.Component {
           this.props.navigation.getParam("user").expoPushToken
         );
       });
-
-    console.log(this.props.navigation.getParam("user"));
   }
 
   render() {

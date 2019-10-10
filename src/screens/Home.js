@@ -33,7 +33,10 @@ class Home extends Component {
     users: [],
     PressLong: "",
     backgroundColor: "",
-    blocked: false
+    blocked: false,
+    finalPushingArray: [],
+    DletedUserAvailable: false,
+    deletedUsers: []
   };
 
   DeleteUser = () => {
@@ -41,7 +44,18 @@ class Home extends Component {
       .ref("users")
       .child(f.auth().currentUser.uid)
       .child("deletedUsers")
-      .push(this.state.PressLong);
+      .push(this.state.PressLong)
+      .then(() => {
+        f.database()
+          .ref("users")
+          .child(f.auth().currentUser.uid)
+          .update({
+            deleted: 1
+          })
+          .then(() => {
+            this.props.navigation.replace("Home");
+          });
+      });
   };
 
   showStatus = id => {
@@ -126,12 +140,16 @@ class Home extends Component {
   componentDidMount() {
     this.registerNotification();
     let filterArray = [];
+    let finalArray = [];
     f.database()
       .ref("chats")
       .once("value")
       .then(snapshot => {
         snapshot.forEach(res => {
-          if (res.val().senderId == f.auth().currentUser.uid) {
+          if (
+            res.val().senderId == f.auth().currentUser.uid ||
+            res.val().recieverId == f.auth().currentUser.uid
+          ) {
             // console.log(res.val().recieverId);
             filterArray.push(res.val().recieverId);
           }
@@ -144,7 +162,6 @@ class Home extends Component {
         let DletedUserAvailable = false;
 
         UniqueArray.map(item => {
-          console.log(item);
           f.database()
             .ref("users")
             .child(f.auth().currentUser.uid)
@@ -152,18 +169,24 @@ class Home extends Component {
             .then(userValue => {
               if (Object.values(userValue.val().deletedUsers).length > 0) {
                 DletedUserAvailable = true;
+                this.setState({
+                  DletedUserAvailable: true
+                });
               }
             })
             .finally(() => {
               if (DletedUserAvailable) {
+                console.log("yes condition is true");
                 f.database()
                   .ref("users")
                   .child(f.auth().currentUser.uid)
                   .child("deletedUsers")
                   .once("value")
                   .then(childItem => {
-                    Object.values(childItem.val).map(deleteUser => {
-                      if (deleteUser !== item) {
+                    Object.values(childItem.val()).map(deleteUser => {
+                      if (deleteUser == item) {
+                        console.log(`ignore it ${deleteUser}`);
+                      } else {
                         console.log(`user is not deleted ${deleteUser}`);
                         f.database()
                           .ref("users")
@@ -171,14 +194,13 @@ class Home extends Component {
                           .once("value")
                           .then(res => {
                             console.log("pushing user");
-                            this.state.users.push({
-                              ...res.val(),
-                              id: res.key,
-                              status: false
-                            });
+                            finalArray.push(res.key);
+                          })
+                          .finally(() => {
+                            let finalUniqueset = new Set(finalArray);
 
                             this.setState({
-                              isLoading: false
+                              finalPushingArray: [...finalUniqueset]
                             });
                           });
                       }
@@ -205,12 +227,34 @@ class Home extends Component {
               }
             });
         });
-
-        // this.setState({
-        //   isLoading: false
-        // });
       });
 
+    this.timer = setInterval(() => {
+      if (this.state.DletedUserAvailable) {
+        this.state.finalPushingArray.map(dataLast => {
+          f.database()
+            .ref("users")
+            .once("value")
+            .then(res => {
+              res.forEach(item => {
+                if (item.key == dataLast) {
+                  clearInterval(this.timer);
+                  this.state.users.push({
+                    ...item.val(),
+                    id: item.key,
+                    status: false
+                  });
+                }
+              });
+            })
+            .finally(() => {
+              this.setState({
+                isLoading: false
+              });
+            });
+        });
+      }
+    }, 800);
     // f.database()
     //   .ref("users")
     //   .once("value")
@@ -237,6 +281,7 @@ class Home extends Component {
               alignItems: "center"
             }}
           >
+            {console.log(this.state)}
             <Spinner color="blue" size="large" />
           </View>
         ) : (
@@ -326,76 +371,93 @@ class Home extends Component {
                 </TouchableOpacity>
               ) : null}
             </View>
+
             <ScrollView style={{ width: "100%", flex: 1 }}>
+              {/* {console.log(this.state)} */}
               <List style={{ marginTop: 10 }}>
-                {this.state.users.map(item => {
-                  if (item.id !== f.auth().currentUser.uid) {
-                    return (
-                      <ListItem
-                        onLongPress={() => {
-                          if (this.state.PressLong == "") {
-                            this.setState({
-                              PressLong: item.id,
-                              backgroundColor: "gray"
-                            });
-                            this.PressLong();
-                          } else {
-                            this.props.navigation.replace("Home");
-                          }
-                          // alert(item.id)
-                        }}
-                        key={item.id}
-                        onPress={() => {
-                          if (this.state.PressLong == "") {
-                            this.props.navigation.navigate("Chat", {
-                              user: item
-                            });
-                          } else {
-                            this.props.navigation.replace("Home");
-                            this.setState({
-                              PressLong: "",
-                              backgroundColor: ""
-                            });
-                          }
-                        }}
-                        avatar
-                      >
-                        <Left>
-                          <Thumbnail
-                            source={{
-                              uri: item.avatar
+                {this.state.users.length > 0 ? (
+                  this.state.users.map(item => {
+                    if (item.id !== f.auth().currentUser.uid) {
+                      return (
+                        <ListItem
+                          onLongPress={() => {
+                            if (this.state.PressLong == "") {
+                              this.setState({
+                                PressLong: item.id,
+                                backgroundColor: "gray"
+                              });
+                              this.PressLong();
+                            } else {
+                              this.props.navigation.replace("Home");
+                            }
+                            // alert(item.id)
+                          }}
+                          key={item.id}
+                          onPress={() => {
+                            if (this.state.PressLong == "") {
+                              this.props.navigation.navigate("Chat", {
+                                user: item
+                              });
+                            } else {
+                              this.props.navigation.replace("Home");
+                              this.setState({
+                                PressLong: "",
+                                backgroundColor: ""
+                              });
+                            }
+                          }}
+                          avatar
+                        >
+                          <Left>
+                            <Thumbnail
+                              source={{
+                                uri: item.avatar
+                              }}
+                            />
+                          </Left>
+                          <Body
+                            style={{
+                              backgroundColor:
+                                this.state.PressLong == item.id ? "grey" : ""
                             }}
-                          />
-                        </Left>
-                        <Body
-                          style={{
-                            backgroundColor:
-                              this.state.PressLong == item.id ? "grey" : ""
-                          }}
-                        >
-                          <Text style={{ fontWeight: "bold" }}>
-                            {item.name}
-                          </Text>
-                          <Text
-                            style={{ fontWeight: this.showStatus(item.id) }}
-                            note
                           >
-                            {item.shortMessage}
-                            {item.shortMessage.length < 35 ? "\n" : ""}
-                          </Text>
-                        </Body>
-                        <Right
-                          style={{
-                            backgroundColor:
-                              this.state.PressLong == item.id ? "grey" : ""
-                          }}
-                        >
-                          <Text>3:43 pm</Text>
-                        </Right>
-                      </ListItem>
-                    );
-                  }
-                })}
+                            <Text style={{ fontWeight: "bold" }}>
+                              {item.name}
+                            </Text>
+                            <Text
+                              style={{ fontWeight: this.showStatus(item.id) }}
+                              note
+                            >
+                              {item.shortMessage}
+                              {item.shortMessage.length < 35 ? "\n" : ""}
+                            </Text>
+                          </Body>
+                          <Right
+                            style={{
+                              backgroundColor:
+                                this.state.PressLong == item.id ? "grey" : ""
+                            }}
+                          >
+                            <Text>3:43 pm</Text>
+                          </Right>
+                        </ListItem>
+                      );
+                    }
+                  })
+                ) : (
+                  <View
+                    style={{
+                      width: "100%",
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Text style={{ fontSize: 15 }}>
+                      Sorry you have no Messages...!
+                    </Text>
+                  </View>
+                )}
               </List>
             </ScrollView>
           </View>

@@ -15,6 +15,7 @@ import Splashscreen from "./src/screens/Splashscreen";
 import Settings from "./src/screens/Settings";
 import Complain from "./src/screens/Complain";
 import ComplainStatus from "./src/screens/ComplainStatus";
+import AllUsers from "./src/screens/AllUsers";
 
 export default class App extends Component {
   render() {
@@ -51,6 +52,9 @@ const Stack = createStackNavigator(
     },
     ComplainStatus: {
       screen: ComplainStatus
+    },
+    AllUser: {
+      screen: AllUsers
     }
   },
   {

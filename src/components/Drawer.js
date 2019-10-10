@@ -170,6 +170,20 @@ const NavigationOptions = props => (
             <Text style={{ fontSize: 18 }}>Complain Status</Text>
           </Body>
         </ListItem>
+        <ListItem
+          onPress={() => props.navigation.navigate("AllUser")}
+          icon
+          style={{ borderBottomWidth: 0 }}
+        >
+          <Left>
+            <Button style={{ backgroundColor: "purple" }}>
+              <Icon active name="users" type="Feather" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0 }}>
+            <Text style={{ fontSize: 18 }}>All Users</Text>
+          </Body>
+        </ListItem>
       </View>
     </ScrollView>
   </SafeAreaView>
