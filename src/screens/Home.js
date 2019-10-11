@@ -193,7 +193,8 @@ class Home extends Component {
             //   res.val().recieverId == f.auth().currentUser.uid
             // ) {
             // console.log(res.val().recieverId);
-            filterArray.push(res.val().senderId);
+            let makers = [res.val().senderId, res.val().recieverId];
+            filterArray.push(...makers);
             // }
           });
 
