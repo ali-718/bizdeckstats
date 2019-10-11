@@ -302,7 +302,7 @@ export default class Messages extends React.Component {
                       justifyContent: "center",
                       flexDirection: "row"
                     }}
-                    onPress={() => this.props.navigation.replace("Home")}
+                    onPress={() => this.props.navigation.goBack()}
                   >
                     <View
                       style={{

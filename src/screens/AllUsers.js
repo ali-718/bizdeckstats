@@ -137,7 +137,7 @@ class Users extends Component {
               <View
                 style={{ width: this.state.PressLong == "" ? "80%" : "60%" }}
               >
-                <Text style={{ color: "black", fontSize: 22 }}>BizIntel</Text>
+                <Text style={{ color: "black", fontSize: 22 }}>All Users</Text>
               </View>
               {this.state.PressLong !== "" ? (
                 <TouchableOpacity
