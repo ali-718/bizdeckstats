@@ -97,7 +97,7 @@ const NavigationOptions = props => (
           style={{
             width: 100,
             height: 40,
-            backgroundColor: "red",
+            backgroundColor: "#F56463",
             alignItems: "center",
             justifyContent: "center",
             marginTop: 20
@@ -110,7 +110,7 @@ const NavigationOptions = props => (
           style={{
             width: 100,
             height: 40,
-            backgroundColor: "blue",
+            backgroundColor: "#6A50E4",
             alignItems: "center",
             justifyContent: "center",
             marginTop: 20
@@ -134,54 +134,82 @@ const NavigationOptions = props => (
           style={{ borderBottomWidth: 0 }}
         >
           <Left>
-            <Button style={{ backgroundColor: "orange" }}>
-              <Icon active name="ios-home" />
+            <Button
+              style={{
+                backgroundColor: "#F7D254",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
+              <Icon active name="ios-home" style={{ fontSize: 25 }} />
             </Button>
           </Left>
-          <Body style={{ borderBottomWidth: 0 }}>
-            <Text style={{ fontSize: 18 }}>Home</Text>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>Home</Text>
           </Body>
         </ListItem>
         <ListItem
           onPress={() => props.navigation.navigate("Complain")}
           icon
-          style={{ borderBottomWidth: 0 }}
+          style={{ borderBottomWidth: 0, marginTop: 20 }}
         >
           <Left>
-            <Button style={{ backgroundColor: "red" }}>
+            <Button
+              style={{
+                backgroundColor: "#F56463",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
               <Icon active name="file-contract" type="FontAwesome5" />
             </Button>
           </Left>
-          <Body style={{ borderBottomWidth: 0 }}>
-            <Text style={{ fontSize: 18 }}>Complain</Text>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>Complain</Text>
           </Body>
         </ListItem>
         <ListItem
           onPress={() => props.navigation.navigate("Complain")}
           icon
-          style={{ borderBottomWidth: 0 }}
+          style={{ borderBottomWidth: 0, marginTop: 20 }}
         >
           <Left>
-            <Button style={{ backgroundColor: "green" }}>
+            <Button
+              style={{
+                backgroundColor: "#50E2BE",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
               <Icon active name="list" type="Entypo" />
             </Button>
           </Left>
-          <Body style={{ borderBottomWidth: 0 }}>
-            <Text style={{ fontSize: 18 }}>Complain Status</Text>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>Complain Status</Text>
           </Body>
         </ListItem>
         <ListItem
           onPress={() => props.navigation.navigate("AllUser")}
           icon
-          style={{ borderBottomWidth: 0 }}
+          style={{ borderBottomWidth: 0, marginTop: 20 }}
         >
           <Left>
-            <Button style={{ backgroundColor: "purple" }}>
+            <Button
+              style={{
+                backgroundColor: "#DC70E2",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
               <Icon active name="users" type="Feather" />
             </Button>
           </Left>
-          <Body style={{ borderBottomWidth: 0 }}>
-            <Text style={{ fontSize: 18 }}>All Users</Text>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>All Users</Text>
           </Body>
         </ListItem>
       </View>
