@@ -26,6 +26,7 @@ class Splashscreen extends Component {
           .once("value")
           .then(item => {
             console.log(item.val());
+            console.log("item val");
             this.props.LoginAction(item.val());
             this.props.navigation.navigate("Home");
             clearTimeout(this.timer);

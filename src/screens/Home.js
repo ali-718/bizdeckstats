@@ -370,7 +370,6 @@ class Home extends Component {
                 </TouchableOpacity>
               ) : null}
             </View>
-            {console.log(this.state)}
             {this.state.users.length > 0 ? (
               <ScrollView style={{ width: "100%", flex: 1 }}>
                 <List style={{ marginTop: 10 }}>

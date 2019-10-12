@@ -35,7 +35,7 @@ const LogoutButton = props => {
 
 const NavigationOptions = props => (
   <SafeAreaView style={[OutStyles.SafeArea, { flex: 1, width: "100%" }]}>
-    <View style={{ alignItems: "center", flex: 1 }}>
+    <View style={{ alignItems: "center", height: 250 }}>
       <View
         style={{
           flex: 1,
@@ -82,7 +82,7 @@ const NavigationOptions = props => (
             color: "black",
             fontWeight: "bold",
             fontSize: 20,
-            marginTop: 20
+            marginTop: 10
           }}
         >
           {props.user.user.name}
@@ -105,7 +105,7 @@ const NavigationOptions = props => (
         >
           <Text style={{ color: "white" }}>Logout</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => props.navigation.navigate("Settings")}
           style={{
             width: 100,
@@ -117,7 +117,7 @@ const NavigationOptions = props => (
           }}
         >
           <Text style={{ color: "white" }}>Settings</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
     <ScrollView style={{ flex: 1 }}>
@@ -210,6 +210,48 @@ const NavigationOptions = props => (
           </Left>
           <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
             <Text style={{ fontSize: 20 }}>All Users</Text>
+          </Body>
+        </ListItem>
+        <ListItem
+          onPress={() => props.navigation.navigate("Settings")}
+          icon
+          style={{ borderBottomWidth: 0, marginTop: 20, marginBottom: 10 }}
+        >
+          <Left>
+            <Button
+              style={{
+                backgroundColor: "#6A50E4",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
+              <Icon active name="settings" type="Feather" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>Settings</Text>
+          </Body>
+        </ListItem>
+        <ListItem
+          onPress={() => props.navigation.navigate("Groups")}
+          icon
+          style={{ borderBottomWidth: 0, marginTop: 20, marginBottom: 10 }}
+        >
+          <Left>
+            <Button
+              style={{
+                backgroundColor: "#6A50E4",
+                borderRadius: 100,
+                width: 50,
+                height: 50
+              }}
+            >
+              <Icon active name="settings" type="Feather" />
+            </Button>
+          </Left>
+          <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>
+            <Text style={{ fontSize: 20 }}>Groups</Text>
           </Body>
         </ListItem>
       </View>
