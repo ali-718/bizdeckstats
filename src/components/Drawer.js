@@ -236,7 +236,7 @@ const NavigationOptions = props => (
         <ListItem
           onPress={() => props.navigation.navigate("Groups")}
           icon
-          style={{ borderBottomWidth: 0, marginTop: 20, marginBottom: 10 }}
+          style={{ borderBottomWidth: 0, marginTop: 20, paddingBottom: 20 }}
         >
           <Left>
             <Button

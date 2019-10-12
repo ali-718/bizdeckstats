@@ -283,9 +283,9 @@ class Edit extends Component {
                   <Label>CNIC</Label>
                   <Input
                     onChangeText={val =>
-                      this.setState({ user: { ...this.state.user, CNIC: val } })
+                      this.setState({ user: { ...this.state.user, cnic: val } })
                     }
-                    value={this.state.user.CNIC}
+                    value={this.state.user.cnic}
                     placeholder="Name...!"
                     keyboardType="number-pad"
                   />
