@@ -31,6 +31,7 @@ import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
 import ModalDropdown from "react-native-modal-dropdown";
 import Modal from "react-native-modal";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 class Groups extends Component {
   state = {
@@ -40,7 +41,9 @@ class Groups extends Component {
     backgroundColor: "",
     visibleModal: false,
     selectedMembers: [],
-    groupName: ""
+    groupName: "",
+    isModalLoading: false,
+    showAlert: false
   };
 
   showStatus = id => {
@@ -71,13 +74,27 @@ class Groups extends Component {
         "Please fill all fields and select atleast one member for your group"
       );
     } else {
+      this.setState({
+        isModalLoading: true
+      });
       f.database()
         .ref("groups")
         .push({
           name: this.state.groupName
         })
         .child("members")
-        .set(this.state.selectedMembers);
+        .set(this.state.selectedMembers)
+        .then(() => {
+          this.setState({
+            PressLong: "",
+            backgroundColor: "",
+            visibleModal: false,
+            selectedMembers: [],
+            groupName: "",
+            isModalLoading: false,
+            showAlert: true
+          });
+        });
       // .then(() => {
       //   this.state.selectedMembers.map(item => {
       //     f.database()
@@ -319,171 +336,204 @@ class Groups extends Component {
           animationOut="slideOutRight"
           style={{ paddingTop: 30, paddingBottom: 30 }}
         >
-          <View
-            style={{
-              width: "100%",
-              flex: 1,
-              alignItems: "center",
-              backgroundColor: "white",
-              borderRadius: 20
-            }}
-          >
-            <View style={{ width: "80%", marginTop: 50 }}>
-              <Item floatingLabel>
-                <Label style={{ color: "gray" }}>Group Name</Label>
-                <Input
-                  onChangeText={val =>
-                    this.setState({
-                      groupName: val
-                    })
-                  }
-                  value={this.state.groupName}
-                  placeholder="Group Name...!"
-                />
-              </Item>
+          {this.state.isModalLoading ? (
+            <View
+              style={{
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "white"
+              }}
+            >
+              <Spinner color="blue" size="large" />
             </View>
-            <View style={{ width: "80%", marginTop: 50, height: 200 }}>
-              <Text style={{ color: "gray", fontSize: 18 }}>
-                Select Members
-              </Text>
-              <ScrollView style={{ width: "100%", flex: 1 }}>
-                <List style={{ marginTop: 10 }}>
-                  {this.state.users.map(item => {
-                    if (item.id !== f.auth().currentUser.uid) {
-                      return (
-                        <ListItem
-                          style={{
-                            backgroundColor:
-                              this.state.PressLongModal == item.id
-                                ? "#D3D3D3"
-                                : "",
-                            opacity:
-                              this.state.PressLongModal == item.id ? "0.8" : "1"
-                          }}
-                          // onLongPress={() => {
-                          //   this.setState({
-                          //     PressLong: item.id,
-                          //     backgroundColor: "gray"
-                          //   });
-                          // alert(item.id)
-                          // }}
-                          key={item.id}
-                          onPress={() => {
-                            this.SelectMembers(item);
-                            this.setState({
-                              PressLongModal: item.id
-                            });
-                            // if (this.state.PressLong == "") {
-                            //   this.props.navigation.navigate("Chat", {
-                            //     user: item
-                            //   });
-                            // } else {
-                            //   this.props.navigation.replace("Home");
-                            //   this.setState({
-                            //     PressLong: "",
-                            //     backgroundColor: ""
-                            //   });
-                            // }
-                          }}
-                          avatar
-                        >
-                          <Left>
-                            <Thumbnail
-                              source={{
-                                uri: item.avatar
-                              }}
-                            />
-                          </Left>
-                          <Body
-                            style={{
-                              backgroundColor:
-                                this.state.PressLong == item.id ? "grey" : ""
-                            }}
-                          >
-                            <Text style={{ fontWeight: "bold" }}>
-                              {item.name}
-                            </Text>
-                            <Text
-                              style={{ fontWeight: this.showStatus(item.id) }}
-                              note
-                            >
-                              {item.shortMessage}
-                              {item.shortMessage.length < 35 ? "\n" : ""}
-                            </Text>
-                          </Body>
-                          <Right
-                            style={{
-                              backgroundColor:
-                                this.state.PressLong == item.id ? "grey" : ""
-                            }}
-                          >
-                            <Text>3:43 pm</Text>
-                          </Right>
-                        </ListItem>
-                      );
-                    }
-                  })}
-                </List>
-              </ScrollView>
-            </View>
-            <View style={{ width: "100%", flexDirection: "row" }}>
-              <View style={{ width: "50%", alignItems: "center" }}>
-                <View
-                  style={{
-                    marginTop: 50,
-                    width: "80%",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <Button
-                    // disabled={this.state.uploading == true ? true : false}
-                    onPress={() =>
+          ) : (
+            <View
+              style={{
+                width: "100%",
+                flex: 1,
+                alignItems: "center",
+                backgroundColor: "white",
+                borderRadius: 20
+              }}
+            >
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Item floatingLabel>
+                  <Label style={{ color: "gray" }}>Group Name</Label>
+                  <Input
+                    onChangeText={val =>
                       this.setState({
-                        visibleModal: false,
-                        selectedMembers: [],
-                        groupName: ""
+                        groupName: val
                       })
                     }
-                    style={{
-                      width: "50%",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                    rounded
-                    danger
-                  >
-                    <Text style={{ color: "white" }}>Cancel</Text>
-                  </Button>
-                </View>
+                    value={this.state.groupName}
+                    placeholder="Group Name...!"
+                  />
+                </Item>
               </View>
-              <View style={{ width: "50%", alignItems: "center" }}>
-                <View
-                  style={{
-                    marginTop: 50,
-                    width: "80%",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <Button
-                    // disabled={this.state.uploading == true ? true : false}
-                    onPress={() => this.createGroup()}
+              <View style={{ width: "80%", marginTop: 50, height: 200 }}>
+                <Text style={{ color: "gray", fontSize: 18 }}>
+                  Select Members
+                </Text>
+                <ScrollView style={{ width: "100%", flex: 1 }}>
+                  <List style={{ marginTop: 10 }}>
+                    {this.state.users.map(item => {
+                      if (item.id !== f.auth().currentUser.uid) {
+                        return (
+                          <ListItem
+                            style={{
+                              backgroundColor:
+                                this.state.PressLongModal == item.id
+                                  ? "#D3D3D3"
+                                  : "",
+                              opacity:
+                                this.state.PressLongModal == item.id ? 0.8 : 1
+                            }}
+                            // onLongPress={() => {
+                            //   this.setState({
+                            //     PressLong: item.id,
+                            //     backgroundColor: "gray"
+                            //   });
+                            // alert(item.id)
+                            // }}
+                            key={item.id}
+                            onPress={() => {
+                              this.SelectMembers(item);
+                              this.setState({
+                                PressLongModal: item.id
+                              });
+                              // if (this.state.PressLong == "") {
+                              //   this.props.navigation.navigate("Chat", {
+                              //     user: item
+                              //   });
+                              // } else {
+                              //   this.props.navigation.replace("Home");
+                              //   this.setState({
+                              //     PressLong: "",
+                              //     backgroundColor: ""
+                              //   });
+                              // }
+                            }}
+                            avatar
+                          >
+                            <Left>
+                              <Thumbnail
+                                source={{
+                                  uri: item.avatar
+                                }}
+                              />
+                            </Left>
+                            <Body
+                              style={{
+                                backgroundColor:
+                                  this.state.PressLong == item.id ? "grey" : ""
+                              }}
+                            >
+                              <Text style={{ fontWeight: "bold" }}>
+                                {item.name}
+                              </Text>
+                              <Text
+                                style={{ fontWeight: this.showStatus(item.id) }}
+                                note
+                              >
+                                {item.shortMessage}
+                                {item.shortMessage.length < 35 ? "\n" : ""}
+                              </Text>
+                            </Body>
+                            <Right
+                              style={{
+                                backgroundColor:
+                                  this.state.PressLong == item.id ? "grey" : ""
+                              }}
+                            >
+                              <Text>3:43 pm</Text>
+                            </Right>
+                          </ListItem>
+                        );
+                      }
+                    })}
+                  </List>
+                </ScrollView>
+              </View>
+              <View style={{ width: "100%", flexDirection: "row" }}>
+                <View style={{ width: "50%", alignItems: "center" }}>
+                  <View
                     style={{
-                      width: "50%",
+                      marginTop: 50,
+                      width: "80%",
                       justifyContent: "center",
                       alignItems: "center"
                     }}
-                    rounded
-                    primary
                   >
-                    <Text style={{ color: "white" }}>Save</Text>
-                  </Button>
+                    <Button
+                      // disabled={this.state.uploading == true ? true : false}
+                      onPress={() =>
+                        this.setState({
+                          visibleModal: false,
+                          selectedMembers: [],
+                          groupName: ""
+                        })
+                      }
+                      style={{
+                        width: "50%",
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                      rounded
+                      danger
+                    >
+                      <Text style={{ color: "white" }}>Cancel</Text>
+                    </Button>
+                  </View>
+                </View>
+                <View style={{ width: "50%", alignItems: "center" }}>
+                  <View
+                    style={{
+                      marginTop: 50,
+                      width: "80%",
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Button
+                      // disabled={this.state.uploading == true ? true : false}
+                      onPress={() => this.createGroup()}
+                      style={{
+                        width: "50%",
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                      rounded
+                      primary
+                    >
+                      <Text style={{ color: "white" }}>Save</Text>
+                    </Button>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
+          )}
         </Modal>
+        {/* Group created starts */}
+        <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Success"
+          message="Group has been created successfully...!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={false}
+          cancelText="Ok"
+          cancelButtonColor="blue"
+          cancelButtonStyle={{ width: 50, alignItems: "center" }}
+          onCancelPressed={() => {
+            this.setState({
+              showAlert: false
+            });
+          }}
+        />
+        {/* group created fails */}
       </SafeAreaView>
     );
   }
