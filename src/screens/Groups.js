@@ -36,6 +36,7 @@ import AwesomeAlert from "react-native-awesome-alerts";
 class Groups extends Component {
   state = {
     isLoading: true,
+    groups: [],
     users: [],
     PressLong: "",
     backgroundColor: "",
@@ -80,11 +81,13 @@ class Groups extends Component {
       f.database()
         .ref("groups")
         .push({
-          name: this.state.groupName
+          name: this.state.groupName,
+          admin: f.auth().currentUser.uid
         })
         .child("members")
         .set(this.state.selectedMembers)
         .then(() => {
+          this.props.navigation.replace("Groups");
           this.setState({
             PressLong: "",
             backgroundColor: "",
@@ -148,8 +151,37 @@ class Groups extends Component {
           this.showStatus(res.key);
           this.state.users.push({ ...res.val(), id: res.key, status: false });
         });
-        this.setState({
-          isLoading: false
+      });
+
+    f.database()
+      .ref("groups")
+      .once("value")
+      .then(snapshot => {
+        if (!snapshot.val()) {
+          this.setState({
+            isLoading: false
+          });
+        }
+        snapshot.forEach(res => {
+          f.database()
+            .ref("groups")
+            .child(res.key)
+            .child("members")
+            .once("value")
+            .then(item => {
+              if (
+                item.val().id == f.auth().currentUser.uid ||
+                res.val().admin == f.auth().currentUser.uid
+              ) {
+                this.state.groups.push({ ...res.val(), id: res.key });
+                console.log(res.val());
+              }
+            })
+            .then(() => {
+              this.setState({
+                isLoading: false
+              });
+            });
         });
       });
   }
@@ -182,6 +214,7 @@ class Groups extends Component {
           </View>
         ) : (
           <View style={{ width: "100%", flex: 1 }}>
+            {console.log(this.state.groups)}
             <View
               style={{
                 width: "100%",
@@ -219,8 +252,6 @@ class Groups extends Component {
               >
                 <Text style={{ color: "black", fontSize: 22 }}>Groups</Text>
               </View>
-              {console.log("this is group")}
-              {console.log(this.state)}
               {this.state.PressLong !== "" ? (
                 <TouchableOpacity
                   style={{
@@ -261,73 +292,75 @@ class Groups extends Component {
                 </TouchableOpacity>
               ) : null}
             </View>
-            <ScrollView style={{ width: "100%", flex: 1 }}>
-              <List style={{ marginTop: 10 }}>
-                {this.state.users.map(item => {
-                  if (item.id !== f.auth().currentUser.uid) {
+            {this.state.groups.length == 0 ? (
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Text>You are not added in any group...!</Text>
+              </View>
+            ) : (
+              <ScrollView style={{ width: "100%", flex: 1 }}>
+                <List style={{ marginTop: 10 }}>
+                  {this.state.groups.map(item => {
                     return (
-                      <ListItem
-                        onLongPress={() => {
-                          this.setState({
-                            PressLong: item.id,
-                            backgroundColor: "gray"
-                          });
-                          // alert(item.id)
-                        }}
+                      <View
                         key={item.id}
-                        onPress={() => {
-                          if (this.state.PressLong == "") {
-                            this.props.navigation.navigate("Chat", {
-                              user: item
-                            });
-                          } else {
-                            this.props.navigation.replace("Home");
-                            this.setState({
-                              PressLong: "",
-                              backgroundColor: ""
-                            });
-                          }
+                        style={{
+                          width: "100%",
+                          height: 70,
+                          flexDirection: "row",
+                          marginTop: 20
                         }}
-                        avatar
                       >
-                        <Left>
+                        <View
+                          style={{
+                            width: "20%",
+                            justifyContent: "center",
+                            alignItems: "center"
+                          }}
+                        >
                           <Thumbnail
                             source={{
-                              uri: item.avatar
+                              uri:
+                                "https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
                             }}
                           />
-                        </Left>
-                        <Body
+                        </View>
+                        <View
                           style={{
-                            backgroundColor:
-                              this.state.PressLong == item.id ? "grey" : ""
+                            width: "60%",
+                            justifyContent: "center",
+                            paddingLeft: 10,
+
+                            borderBottomColor: "gainsboro",
+                            borderBottomWidth: 0.5,
+                            borderStyle: "solid"
                           }}
                         >
-                          <Text style={{ fontWeight: "bold" }}>
-                            {item.name}
-                          </Text>
-                          <Text
-                            style={{ fontWeight: this.showStatus(item.id) }}
-                            note
-                          >
-                            {item.shortMessage}
-                            {item.shortMessage.length < 35 ? "\n" : ""}
-                          </Text>
-                        </Body>
-                        <Right
+                          <Text style={{ fontSize: 22 }}>{item.name}</Text>
+                        </View>
+                        <View
                           style={{
-                            backgroundColor:
-                              this.state.PressLong == item.id ? "grey" : ""
+                            width: "20%",
+                            justifyContent: "center",
+                            borderBottomColor: "gainsboro",
+                            borderBottomWidth: 0.5,
+                            borderStyle: "solid"
                           }}
                         >
-                          <Text>3:43 pm</Text>
-                        </Right>
-                      </ListItem>
+                          <Text>3:34 AM</Text>
+                        </View>
+                      </View>
                     );
-                  }
-                })}
-              </List>
-            </ScrollView>
+                  })}
+                </List>
+              </ScrollView>
+            )}
           </View>
         )}
         <Modal
@@ -378,7 +411,7 @@ class Groups extends Component {
                 <ScrollView style={{ width: "100%", flex: 1 }}>
                   <List style={{ marginTop: 10 }}>
                     {this.state.users.map(item => {
-                      if (item.id !== f.auth().currentUser.uid) {
+                      if (item.id !== f.auth().currentUser.uid && item.email) {
                         return (
                           <ListItem
                             style={{
