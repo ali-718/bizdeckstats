@@ -18,6 +18,7 @@ import * as f from "firebase";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { connect } from "react-redux";
 import { LoginAction } from "../actions/userAction";
+import axios from "axios";
 
 class Edit extends Component {
   state = {
@@ -142,16 +143,24 @@ class Edit extends Component {
         .child(f.auth().currentUser.uid)
         .update(this.state.user)
         .then(() => {
-          f.database()
-            .ref("users")
-            .child(f.auth().currentUser.uid)
-            .once("value")
-            .then(item => {
-              if (item.val()) {
-                this.props.LoginAction(item.val());
-                this.props.navigation.replace("Home");
-                console.log("user details edited");
-              }
+          axios
+            .post(
+              `http://198.37.118.15:7040/api/Task/UpdateCnic?Cnic=${
+                this.state.user.cnic
+              }&userIdFireBase=${f.auth().currentUser.uid}`
+            )
+            .then(() => {
+              f.database()
+                .ref("users")
+                .child(f.auth().currentUser.uid)
+                .once("value")
+                .then(item => {
+                  if (item.val()) {
+                    this.props.LoginAction(item.val());
+                    this.props.navigation.replace("Home");
+                    console.log("user details edited");
+                  }
+                });
             });
         });
     } else {
