@@ -291,7 +291,17 @@ class Home extends Component {
                 height: 50,
                 backgroundColor: "white",
                 alignItems: "center",
-                flexDirection: "row"
+                flexDirection: "row",
+
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 1
+                },
+                shadowOpacity: 0.18,
+                shadowRadius: 1.0,
+
+                elevation: 1
               }}
             >
               <View
@@ -372,11 +382,18 @@ class Home extends Component {
             </View>
             {this.state.users.length > 0 ? (
               <ScrollView style={{ width: "100%", flex: 1 }}>
-                <List style={{ marginTop: 10 }}>
-                  {this.state.users.map(item => {
+                <List style={{ paddingTop: -20 }}>
+                  {this.state.users.map((item, i) => {
                     if (item.id !== f.auth().currentUser.uid) {
                       return (
-                        <ListItem
+                        <TouchableOpacity
+                          key={item.id}
+                          style={{
+                            width: "100%",
+                            height: 50,
+                            flexDirection: "row",
+                            marginTop: i == 0 ? 20 : 30
+                          }}
                           onLongPress={() => {
                             if (this.state.PressLong == "") {
                               this.setState({
@@ -390,7 +407,6 @@ class Home extends Component {
                             }
                             // alert(item.id)
                           }}
-                          key={item.id}
                           onPress={() => {
                             if (this.state.PressLong == "") {
                               this.props.navigation.navigate("Chat", {
@@ -404,41 +420,50 @@ class Home extends Component {
                               });
                             }
                           }}
-                          avatar
                         >
-                          <Left>
+                          <View
+                            style={{
+                              width: "20%",
+                              justifyContent: "center",
+                              alignItems: "center"
+                            }}
+                          >
                             <Thumbnail
                               source={{
                                 uri: item.avatar
                               }}
                             />
-                          </Left>
-                          <Body
+                          </View>
+                          <View
                             style={{
+                              width: "60%",
+                              justifyContent: "center",
+                              paddingLeft: 10,
                               backgroundColor:
                                 this.state.PressLong == item.id ? "grey" : ""
+                              // borderBottomColor: "gainsboro",
+                              // borderBottomWidth: 0.5,
+                              // borderStyle: "solid"
                             }}
                           >
-                            <Text style={{ fontWeight: "bold" }}>
+                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                               {item.name}
                             </Text>
-                            <Text
-                              style={{ fontWeight: this.showStatus(item.id) }}
-                              note
-                            >
+                            <Text style={{ marginTop: 5, color: "grey" }}>
                               {item.shortMessage}
-                              {item.shortMessage.length < 35 ? "\n" : ""}
                             </Text>
-                          </Body>
-                          <Right
+                          </View>
+                          <View
                             style={{
-                              backgroundColor:
-                                this.state.PressLong == item.id ? "grey" : ""
+                              width: "20%"
+                              // borderBottomColor: "gainsboro",
+                              // borderBottomWidth: 0.5,
+                              // borderStyle: "solid"
                             }}
                           >
-                            <Text>3:43 pm</Text>
-                          </Right>
-                        </ListItem>
+                            <Text>3:34 AM</Text>
+                          </View>
+                        </TouchableOpacity>
                       );
                     }
                   })}

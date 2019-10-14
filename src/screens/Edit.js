@@ -133,7 +133,9 @@ class Edit extends Component {
       this.state.user.name != "" &&
       this.state.user.username != "" &&
       this.state.user.description &&
-      this.state.user.description != ""
+      this.state.user.description != "" &&
+      this.state.user.phone !== "" &&
+      this.state.user.cnic !== ""
     ) {
       f.database()
         .ref("users")
@@ -287,6 +289,21 @@ class Edit extends Component {
                     }
                     value={this.state.user.cnic}
                     placeholder="Name...!"
+                    keyboardType="number-pad"
+                  />
+                </Item>
+              </View>
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Item floatingLabel>
+                  <Label>Phone</Label>
+                  <Input
+                    onChangeText={val =>
+                      this.setState({
+                        user: { ...this.state.user, phone: val }
+                      })
+                    }
+                    value={this.state.user.phone}
+                    placeholder="Phone...!"
                     keyboardType="number-pad"
                   />
                 </Item>

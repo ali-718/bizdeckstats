@@ -17,6 +17,7 @@ import Complain from "./src/screens/Complain";
 import ComplainStatus from "./src/screens/ComplainStatus";
 import AllUsers from "./src/screens/AllUsers";
 import Groups from "./src/screens/Groups";
+import Register from "./src/screens/Register";
 
 export default class App extends Component {
   render() {
@@ -59,6 +60,9 @@ const Stack = createStackNavigator(
     },
     Groups: {
       screen: Groups
+    },
+    Register: {
+      screen: Register
     }
   },
   {

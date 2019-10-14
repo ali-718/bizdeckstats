@@ -251,6 +251,21 @@ class Login extends Component {
               Continue with Facebook
             </Text>
           </TouchableOpacity>
+          <View
+            style={{
+              width: "80%",
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 10
+            }}
+          >
+            <Text style={{ color: "grey" }}>Don't have an account ? </Text>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Register")}
+            >
+              <Text style={{ color: "blue" }}>Signup</Text>
+            </TouchableOpacity>
+          </View>
           {this.state.isLoading ? (
             <Spinner color="blue" style={{ marginTop: 20 }} />
           ) : null}

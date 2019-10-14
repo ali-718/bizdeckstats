@@ -343,6 +343,9 @@ class Groups extends Component {
                           }}
                         >
                           <Text style={{ fontSize: 22 }}>{item.name}</Text>
+                          <Text style={{ marginTop: 10, color: "grey" }}>
+                            {item.members.length + 1} members
+                          </Text>
                         </View>
                         <View
                           style={{

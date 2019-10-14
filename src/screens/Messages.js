@@ -9,9 +9,10 @@ import {
   SafeAreaView,
   BackHandler
 } from "react-native";
-import { Icon, Spinner } from "native-base";
+import { Icon, Spinner, Thumbnail } from "native-base";
 import styles from "../../constants/styles";
 import * as f from "firebase";
+import { Avatar } from "react-native-elements";
 
 const auth = f.auth();
 
@@ -274,10 +275,18 @@ export default class Messages extends React.Component {
                 width: "100%",
                 height: 50,
                 justifyContent: "center",
-                elevation: 3,
                 borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
                 borderBottomColor: "gainsboro",
-                borderStyle: "solid"
+                borderStyle: "solid",
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 1
+                },
+                shadowOpacity: 0.18,
+                shadowRadius: 1.0,
+
+                elevation: 1
               }}
             >
               <View
@@ -291,13 +300,13 @@ export default class Messages extends React.Component {
                   style={{
                     width: "100%",
                     flexDirection: "row",
-                    height: 20
+                    height: 50
                   }}
                 >
                   <TouchableOpacity
                     style={{
                       width: "20%",
-                      height: 20,
+                      height: 50,
                       alignItems: "center",
                       justifyContent: "center",
                       flexDirection: "row"
@@ -322,12 +331,19 @@ export default class Messages extends React.Component {
                   <View
                     style={{
                       width: "70%",
-                      height: 20,
-                      justifyContent: "center",
-                      alignItems: "center"
+                      height: 50,
+                      alignItems: "center",
+                      flexDirection: "row"
                     }}
                   >
-                    <Text style={{ fontWeight: "bold" }}>
+                    <Avatar
+                      source={{
+                        uri: this.props.navigation.getParam("user").avatar
+                      }}
+                      size="small"
+                      rounded
+                    />
+                    <Text style={{ fontWeight: "bold", marginLeft: 10 }}>
                       {this.props.navigation.getParam("user").name}
                     </Text>
                   </View>

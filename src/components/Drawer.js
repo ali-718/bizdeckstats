@@ -241,13 +241,13 @@ const NavigationOptions = props => (
           <Left>
             <Button
               style={{
-                backgroundColor: "#6A50E4",
+                backgroundColor: "#5ABAEE",
                 borderRadius: 100,
                 width: 50,
                 height: 50
               }}
             >
-              <Icon active name="settings" type="Feather" />
+              <Icon active name="group-work" type="MaterialIcons" />
             </Button>
           </Left>
           <Body style={{ borderBottomWidth: 0, paddingLeft: 10 }}>

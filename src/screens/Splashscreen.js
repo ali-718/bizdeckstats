@@ -27,9 +27,19 @@ class Splashscreen extends Component {
           .then(item => {
             console.log(item.val());
             console.log("item val");
-            this.props.LoginAction(item.val());
-            this.props.navigation.navigate("Home");
-            clearTimeout(this.timer);
+            if (
+              item.val().description &&
+              item.val().phone &&
+              item.val().cnic &&
+              item.val().address
+            ) {
+              this.props.LoginAction(item.val());
+              this.props.navigation.navigate("Home");
+              clearTimeout(this.timer);
+            } else {
+              this.props.LoginAction(item.val());
+              this.props.navigation.navigate("Edit", { fromLogin: true });
+            }
           });
       } else {
         this.props.navigation.navigate("Login");
