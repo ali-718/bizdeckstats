@@ -171,7 +171,7 @@ const NavigationOptions = props => (
           </Body>
         </ListItem>
         <ListItem
-          onPress={() => props.navigation.navigate("Complain")}
+          onPress={() => props.navigation.navigate("ComplainStatus")}
           icon
           style={{ borderBottomWidth: 0, marginTop: 20 }}
         >

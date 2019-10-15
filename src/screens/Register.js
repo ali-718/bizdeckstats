@@ -71,7 +71,7 @@ class Register extends Component {
               .then(() => {
                 axios
                   .post(
-                    `http://198.37.118.15:7040/api/Task/AddUser?Name=${this.state.Name}&UserName=${this.state.UserName}&Description=&email=${this.state.Email}&expoPushToken=&ShortMsg=&cnic=${this.state.CNIC}&MobileNo=${this.state.Phone}`
+                    `http://198.37.118.15:7040/api/Task/AddUser?Name=${this.state.Name}&UserName=${this.state.UserName}&Description=&email=${this.state.Email}&expoPushToken=&ShortMsg=&cnic=${this.state.CNIC}&MobileNo=${this.state.Phone}&FirBaseId=${user.user.uid}`
                   )
                   .then(() => {
                     this.props.LoginAction({

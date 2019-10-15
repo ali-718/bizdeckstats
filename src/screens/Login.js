@@ -122,7 +122,10 @@ class Login extends Component {
               if (item.val()) {
                 console.log("res.val() is availaible");
                 this.props.LoginAction(item.val());
-                this.props.navigation.navigate("Edit", { fromLogin: true });
+                this.props.navigation.navigate("Edit", {
+                  fromLogin: true,
+                  fromFacebook: true
+                });
                 this.setState({
                   isLoading: false
                 });

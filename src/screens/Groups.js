@@ -472,8 +472,12 @@ class Groups extends Component {
                                 style={{ fontWeight: this.showStatus(item.id) }}
                                 note
                               >
-                                {item.shortMessage}
-                                {item.shortMessage.length < 35 ? "\n" : ""}
+                                {item.shortMessage ? item.shortMessage : ""}
+                                {item.shortMessage
+                                  ? item.shortMessage.length < 35
+                                    ? "\n"
+                                    : ""
+                                  : "\n"}
                               </Text>
                             </Body>
                             <Right
