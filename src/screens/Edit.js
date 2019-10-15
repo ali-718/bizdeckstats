@@ -36,8 +36,8 @@ class Edit extends Component {
     uploading: false,
     showAlert2: false,
     internetError: false,
-    selected2: "",
-    selected1: "",
+    areaid: "",
+    houseid: "",
     areaList: [],
     houseList: [],
     isLoading: false
@@ -153,10 +153,25 @@ class Edit extends Component {
       .once("value")
       .then(res => {
         this.setState({
-          user: { ...res.val(), id: res.key }
+          user: {
+            ...res.val(),
+            id: res.key
+          },
+          areaid: res.val().areaid,
+          houseid: res.val().houseid
         });
       })
       .then(() => {
+        axios
+          .get(
+            `http://198.37.118.15:7040/api/Task/GetHouseNos?AreaId=${this.state.areaid}`
+          )
+          .then(res => {
+            this.setState({
+              houseList: res.data
+            });
+            console.log("ok it is set");
+          });
         axios
           .get(`http://198.37.118.15:7040/api/Task/GetArea`)
           .then(res => {
@@ -172,20 +187,20 @@ class Edit extends Component {
 
   onValueChange1 = value => {
     this.setState({
-      selected1: value
+      houseid: value
     });
   };
 
   onValueChange2 = value => {
     this.setState({
-      selected2: value,
+      areaid: value,
       isLoading: true
     });
 
     setTimeout(() => {
       axios
         .get(
-          `http://198.37.118.15:7040/api/Task/GetHouseNos?AreaId=${this.state.selected2}`
+          `http://198.37.118.15:7040/api/Task/GetHouseNos?AreaId=${this.state.areaid}`
         )
         .then(res => {
           this.setState({
@@ -217,8 +232,8 @@ class Edit extends Component {
     let phone = this.state.user.phone ? this.state.user.phone.trim() : "";
     let cnic = this.state.user.cnic ? this.state.user.cnic.trim() : "";
     let address = this.state.user.address ? this.state.user.address.trim() : "";
-    let House = this.state.selected1;
-    let Area = this.state.selected2;
+    let House = this.state.houseid;
+    let Area = this.state.areaid;
 
     if (
       avatar != "" &&
@@ -235,7 +250,7 @@ class Edit extends Component {
       f.database()
         .ref("users")
         .child(f.auth().currentUser.uid)
-        .update(this.state.user)
+        .update({ ...this.state.user, areaid: Area, houseid: House })
         .then(() => {
           if (this.props.navigation.getParam("fromFacebook")) {
             axios
@@ -264,7 +279,7 @@ class Edit extends Component {
                     });
                     this.showInternetError();
                     console.log(
-                      "error while sending data to mansoor bhai server"
+                      "error while sending data to mansoor bhai server 2"
                     );
                   });
               })
@@ -278,49 +293,34 @@ class Edit extends Component {
           } else {
             axios
               .post(
-                `http://198.37.118.15:7040/api/Task/UpdateCnic?Cnic=${
-                  this.state.user.cnic
-                }&userIdFireBase=${f.auth().currentUser.uid}`
+                `http://198.37.118.15:7040/api/Task/UpdateUserInfo?AreaId=${Area}&HouseId=${House}&Addr=${address}&userIdFireBase=${
+                  f.auth().currentUser.uid
+                }&cnic=${cnic}&name=${name}&username=${username}&Description=${description}&email=${
+                  this.state.user.email
+                }&mobile=${phone}&ShortMsg=short message`
               )
               .then(() => {
-                axios
-                  .post(
-                    `http://198.37.118.15:7040/api/Task/UpdateAddress?AreaId=${Area}&HouseId=${House}&Addr=${address}&userIdFireBase=${
-                      f.auth().currentUser.uid
-                    }`
-                  )
-                  .then(() => {
-                    f.database()
-                      .ref("users")
-                      .child(f.auth().currentUser.uid)
-                      .once("value")
-                      .then(item => {
-                        if (item.val()) {
-                          this.props.LoginAction(item.val());
-                          this.props.navigation.replace("Home");
-                          console.log("user details edited");
-                          this.setState({
-                            uploading: false
-                          });
-                          this.showInternetError();
-                        }
-                      })
-                      .catch(e => {
-                        this.setState({
-                          uploading: false
-                        });
-                        this.showInternetError();
-                        console.log("error while fetching data");
+                f.database()
+                  .ref("users")
+                  .child(f.auth().currentUser.uid)
+                  .once("value")
+                  .then(item => {
+                    if (item.val()) {
+                      this.props.LoginAction(item.val());
+                      this.props.navigation.replace("Home");
+                      console.log("user details edited");
+                      this.setState({
+                        uploading: false
                       });
+                      this.showInternetError();
+                    }
                   })
-                  .catch(() => {
+                  .catch(e => {
                     this.setState({
                       uploading: false
                     });
                     this.showInternetError();
-                    console.log(
-                      "error while updating address on mansoor bhai server"
-                    );
+                    console.log("error while fetching data");
                   });
               })
               .catch(e => {
@@ -328,7 +328,9 @@ class Edit extends Component {
                   uploading: false
                 });
                 this.showInternetError();
-                console.log("error while sending data to mansoor bhai server");
+                console.log(
+                  "error while sending data to mansoor bhai server 3"
+                );
               });
           }
         })
@@ -517,7 +519,7 @@ class Edit extends Component {
                         placeholder="Select your Area"
                         placeholderStyle={{ color: "black" }}
                         placeholderIconColor="#007aff"
-                        selectedValue={this.state.selected2}
+                        selectedValue={this.state.areaid}
                         onValueChange={this.onValueChange2}
                       >
                         {this.state.areaList.map(item => (
@@ -530,7 +532,7 @@ class Edit extends Component {
                       </Picker>
                     </Item>
                   </View>
-                  {this.state.selected2 ? (
+                  {this.state.areaid ? (
                     <View
                       style={{
                         marginTop: 50,
@@ -568,7 +570,7 @@ class Edit extends Component {
                           placeholder="Select your Area"
                           placeholderStyle={{ color: "black" }}
                           placeholderIconColor="#007aff"
-                          selectedValue={this.state.selected1}
+                          selectedValue={this.state.houseid}
                           onValueChange={this.onValueChange1}
                         >
                           {this.state.houseList.map(item => (
