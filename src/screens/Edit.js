@@ -40,7 +40,14 @@ class Edit extends Component {
     houseid: "",
     areaList: [],
     houseList: [],
-    isLoading: false
+    isLoading: true,
+    showSuccess: false
+  };
+
+  showSuccess = () => {
+    this.setState({
+      showSuccess: true
+    });
   };
 
   showAlert2 = () => {
@@ -246,6 +253,9 @@ class Edit extends Component {
       House !== "" &&
       Area !== ""
     ) {
+      this.setState({
+        isLoading: true
+      });
       console.log("yes we are here");
       f.database()
         .ref("users")
@@ -268,14 +278,15 @@ class Edit extends Component {
                       this.props.navigation.replace("Home");
                       console.log("user details edited");
                       this.setState({
-                        uploading: false
+                        uploading: false,
+                        isLoading: false
                       });
-                      this.showInternetError();
                     }
                   })
                   .catch(e => {
                     this.setState({
-                      uploading: false
+                      uploading: false,
+                      isLoading: false
                     });
                     this.showInternetError();
                     console.log(
@@ -285,7 +296,8 @@ class Edit extends Component {
               })
               .catch(e => {
                 this.setState({
-                  uploading: false
+                  uploading: false,
+                  isLoading: false
                 });
                 this.showInternetError();
                 console.log("error while sending data to mansoor bhai server");
@@ -306,18 +318,19 @@ class Edit extends Component {
                   .once("value")
                   .then(item => {
                     if (item.val()) {
+                      this.showSuccess();
                       this.props.LoginAction(item.val());
-                      this.props.navigation.replace("Home");
                       console.log("user details edited");
                       this.setState({
-                        uploading: false
+                        uploading: false,
+                        isLoading: false
                       });
-                      this.showInternetError();
                     }
                   })
                   .catch(e => {
                     this.setState({
-                      uploading: false
+                      uploading: false,
+                      isLoading: false
                     });
                     this.showInternetError();
                     console.log("error while fetching data");
@@ -325,7 +338,8 @@ class Edit extends Component {
               })
               .catch(e => {
                 this.setState({
-                  uploading: false
+                  uploading: false,
+                  isLoading: false
                 });
                 this.showInternetError();
                 console.log(
@@ -336,14 +350,16 @@ class Edit extends Component {
         })
         .catch(e => {
           this.setState({
-            uploading: false
+            uploading: false,
+            isLoading: false
           });
           this.showInternetError();
           console.log("error while updating data in firebase");
         });
     } else {
       this.setState({
-        uploading: false
+        uploading: false,
+        isLoading: false
       });
       this.showAlert2();
     }
@@ -633,6 +649,7 @@ class Edit extends Component {
                       }}
                       rounded
                       primary
+                      activeOpacity={0.5}
                     >
                       <Text style={{ color: "white" }}>Save</Text>
                     </Button>
@@ -703,6 +720,27 @@ class Edit extends Component {
               }}
             />
             {/* Internet error  ends */}
+
+            {/* Changes saved starts */}
+            <AwesomeAlert
+              show={this.state.showSuccess}
+              showProgress={false}
+              title="Success"
+              message="Your changes are saved...!"
+              closeOnTouchOutside={true}
+              closeOnHardwareBackPress={false}
+              showCancelButton={true}
+              showConfirmButton={false}
+              cancelText="Ok"
+              cancelButtonColor="red"
+              cancelButtonStyle={{ width: 50, alignItems: "center" }}
+              onCancelPressed={() => {
+                this.setState({
+                  showSuccess: false
+                });
+              }}
+            />
+            {/* changes saved  ends */}
           </View>
         )}
       </KeyboardAvoidingView>

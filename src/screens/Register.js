@@ -66,7 +66,10 @@ class Register extends Component {
                 phone: this.state.Phone,
                 cnic: this.state.CNIC,
                 avatar:
-                  "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?v=1530129081"
+                  "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?v=1530129081",
+                areaid: 0,
+                houseid: 0,
+                shortMessage: "short message"
               })
               .then(() => {
                 axios

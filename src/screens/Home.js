@@ -446,7 +446,7 @@ class Home extends Component {
                               // borderStyle: "solid"
                             }}
                           >
-                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                            <Text style={{ fontSize: 18, fontWeight: "400" }}>
                               {item.name}
                             </Text>
                             <Text style={{ marginTop: 5, color: "grey" }}>
