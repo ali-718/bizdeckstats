@@ -188,13 +188,13 @@ class Groups extends Component {
 
   SelectMembers = user => {
     this.state.selectedMembers.push({
-      description: user.description,
-      email: user.email,
-      expoPushToken: user.expoPushToken,
-      id: user.id,
-      name: user.name,
-      shortMessage: user.shortMessage,
-      username: user.username
+      description: user.description ? user.description : "",
+      email: user.email ? user.email : "",
+      expoPushToken: user.expoPushToken ? user.expoPushToken : "",
+      id: user.id ? user.id : "",
+      name: user.name ? user.name : "",
+      shortMessage: user.shortMessage ? user.shortMessage : "",
+      username: user.username ? user.username : ""
     });
   };
 
@@ -308,7 +308,16 @@ class Groups extends Component {
                 <List style={{ marginTop: 10 }}>
                   {this.state.groups.map(item => {
                     return (
-                      <View
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (this.state.PressLong == "") {
+                            this.props.navigation.navigate("Chat", {
+                              user: item
+                            });
+                          } else {
+                            this.props.navigation.replace("Groups");
+                          }
+                        }}
                         key={item.id}
                         style={{
                           width: "100%",
@@ -358,7 +367,7 @@ class Groups extends Component {
                         >
                           <Text>3:34 AM</Text>
                         </View>
-                      </View>
+                      </TouchableOpacity>
                     );
                   })}
                 </List>
