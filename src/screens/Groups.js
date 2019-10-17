@@ -82,7 +82,9 @@ class Groups extends Component {
         .ref("groups")
         .push({
           name: this.state.groupName,
-          admin: f.auth().currentUser.uid
+          admin: f.auth().currentUser.uid,
+          avatar:
+            "https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
         })
         .child("members")
         .set(this.state.selectedMembers)

@@ -13,13 +13,17 @@ import {
 } from "native-base";
 import styles from "../../constants/styles";
 import axios from "axios";
+import * as f from "firebase";
 
 export default class Complain extends Component {
   state = {
     selected2: undefined,
     complain: {},
     isLoading: true,
-    complaintsList: []
+    complaintsList: [],
+    remarks: "",
+    departmentList: [],
+    selectedDepartment: undefined
   };
 
   onValueChange2(value) {
@@ -27,6 +31,31 @@ export default class Complain extends Component {
       selected2: value
     });
   }
+
+  PostComplaint = () => {
+    if (
+      this.state.selected2 &&
+      this.state.remarks.trim() !== "" &&
+      this.state.selectedDepartment
+    ) {
+      axios
+        .post(
+          `http://198.37.118.15:7040/api/Task/AddCompalint?FireBaseUserId=${
+            f.auth().currentUser.uid
+          }&CompType=${this.state.selected2}&CmpDsc=${
+            this.state.remarks
+          }&DeptId=${this.state.selectedDepartment}`
+        )
+        .then(() => {
+          alert("successfully saved ");
+        })
+        .catch(e => {
+          alert("error occoured");
+        });
+    } else {
+      alert("fill all fields");
+    }
+  };
 
   componentDidMount() {
     axios
@@ -37,7 +66,16 @@ export default class Complain extends Component {
         });
       })
       .then(() => {
-        this.setState({ isLoading: false });
+        axios
+          .get(`http://198.37.118.15:7040/api/Task/GetDept`)
+          .then(res => {
+            this.setState({
+              departmentList: res.data
+            });
+          })
+          .then(() => {
+            this.setState({ isLoading: false });
+          });
       });
   }
 
@@ -140,7 +178,7 @@ export default class Complain extends Component {
                   maxLength={450}
                   onChangeText={val =>
                     this.setState({
-                      complain: { ...this.state.complain, remarks: val }
+                      remarks: val
                     })
                   }
                   style={{ paddingTop: 10, borderColor: "gray" }}
@@ -169,14 +207,18 @@ export default class Complain extends Component {
                     placeholder="Select your Department"
                     placeholderStyle={{ color: "black" }}
                     placeholderIconColor="#007aff"
-                    selectedValue={this.state.selected2}
-                    onValueChange={this.onValueChange2.bind(this)}
+                    selectedValue={this.state.selectedDepartment}
+                    onValueChange={value =>
+                      this.setState({ selectedDepartment: value })
+                    }
                   >
-                    <Picker.Item label="Wallet" value="key0" />
-                    <Picker.Item label="ATM Card" value="key1" />
-                    <Picker.Item label="Debit Card" value="key2" />
-                    <Picker.Item label="Credit Card" value="key3" />
-                    <Picker.Item label="Net Banking" value="key4" />
+                    {this.state.departmentList.map(item => (
+                      <Picker.Item
+                        key={item.DeptId}
+                        label={item.DeptDsc}
+                        value={item.DeptId}
+                      />
+                    ))}
                   </Picker>
                   {Platform.OS == "android" ? null : (
                     <Right>
@@ -204,7 +246,7 @@ export default class Complain extends Component {
               >
                 <Button
                   disabled={this.state.uploading == true ? true : false}
-                  // onPress={() => this.submitUserInfo()}
+                  onPress={() => this.PostComplaint()}
                   style={{
                     width: "30%",
                     justifyContent: "center",

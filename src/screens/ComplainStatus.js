@@ -22,11 +22,39 @@ import {
 } from "native-base";
 import styles from "../../constants/styles";
 import Pending from "../assets/alarm-clock.png";
+import approved from "../assets/approved.png";
+import rejected from "../assets/rejected.png";
+import progress from "../assets/progress.png";
+import Lock from "../assets/locked.png";
+import axios from "axios";
+import * as f from "firebase";
 
 export default class ComplainStatus extends Component {
   state = {
-    isLoading: false
+    isLoading: true,
+    complaintsList: []
   };
+
+  componentDidMount() {
+    axios
+      .get(
+        `http://198.37.118.15:7040/api/Task/GetComplaint?FireBaseUserId=${
+          f.auth().currentUser.uid
+        }&UserType=0`
+      )
+      .then(res => {
+        this.setState({
+          complaintsList: res.data
+        });
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+      .catch(() => {
+        alert("some error occoured");
+        this.setState({ isLoading: false });
+      });
+  }
 
   render() {
     return (
@@ -73,85 +101,115 @@ export default class ComplainStatus extends Component {
                 </Text>
               </View>
             </View>
-            <ScrollView style={{ width: "100%", flex: 1 }}>
+            {this.state.complaintsList.length > 0 ? (
+              <ScrollView style={{ width: "100%", flex: 1 }}>
+                {this.state.complaintsList.map(item => (
+                  <View
+                    key={item.CmpId}
+                    style={{
+                      width: "90%",
+                      height: 80,
+                      marginTop: 10,
+                      alignSelf: "center",
+                      paddingLeft: 10,
+                      borderColor: "gainsboro",
+                      borderStyle: "solid",
+                      borderWidth: 0.3,
+                      paddingRight: 10,
+                      paddingBottom: 10
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 40,
+                        flexDirection: "row",
+                        justifyContent: "center"
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: "50%",
+                          justifyContent: "center",
+                          height: 40
+                        }}
+                      >
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                          {item.CompTypeDsc}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: "50%",
+                          alignItems: "flex-end",
+                          justifyContent: "center",
+                          height: 40,
+                          flexDirection: "row"
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: "100%",
+                            height: 40,
+                            justifyContent: "center",
+                            alignItems: "flex-end",
+                            flexDirection: "row"
+                          }}
+                        >
+                          <View
+                            style={{ width: "40%", alignItems: "flex-end" }}
+                          >
+                            <Image
+                              source={
+                                item.Status == "Pending"
+                                  ? Pending
+                                  : item.Status == "Approved"
+                                  ? approved
+                                  : item.Status == "Rejected"
+                                  ? rejected
+                                  : item.Status == "In Process"
+                                  ? progress
+                                  : Lock
+                              }
+                              style={{ width: 15, height: 15 }}
+                            />
+                          </View>
+                          <View
+                            style={{ width: "60%", alignItems: "flex-start" }}
+                          >
+                            <Text style={{ marginLeft: 5 }}>{item.Status}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 40,
+                        justifyContent: "center"
+                      }}
+                    >
+                      <Text>
+                        {item.CmpDsc.length < 25
+                          ? item.CmpDsc
+                          : "very long long"}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
               <View
                 style={{
-                  width: "90%",
-                  height: 80,
-                  marginTop: 10,
-                  alignSelf: "center",
-                  paddingLeft: 10,
-                  borderColor: "gainsboro",
-                  borderStyle: "solid",
-                  borderWidth: 0.3,
-                  paddingRight: 10,
-                  paddingBottom: 10
+                  width: "100%",
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
                 }}
               >
-                <View
-                  style={{
-                    width: "100%",
-                    height: 40,
-                    flexDirection: "row",
-                    justifyContent: "center"
-                  }}
-                >
-                  <View
-                    style={{
-                      width: "50%",
-                      justifyContent: "center",
-                      height: 40
-                    }}
-                  >
-                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                      Options
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      width: "50%",
-                      alignItems: "flex-end",
-                      justifyContent: "center",
-                      height: 40,
-                      flexDirection: "row"
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: "60%",
-                        height: 40,
-                        justifyContent: "center",
-                        alignItems: "flex-end"
-                      }}
-                    >
-                      <Image
-                        source={Pending}
-                        style={{ width: 15, height: 15 }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        width: "40%",
-                        height: 40,
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <Text>Pending</Text>
-                    </View>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    width: "100%",
-                    height: 40,
-                    justifyContent: "center"
-                  }}
-                >
-                  <Text>hello this is my remarks on complain...</Text>
-                </View>
+                <Text>You have no complaints register with us...!</Text>
               </View>
-            </ScrollView>
+            )}
           </View>
         )}
       </SafeAreaView>
