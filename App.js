@@ -18,14 +18,11 @@ import ComplainStatus from "./src/screens/ComplainStatus";
 import AllUsers from "./src/screens/AllUsers";
 import Groups from "./src/screens/Groups";
 import Register from "./src/screens/Register";
+import HomeChart from "./src/screens/HomeChart";
 
 export default class App extends Component {
   render() {
-    return (
-      <Provider store={store}>
-        <MainNav />
-      </Provider>
-    );
+    return <HomeChart />;
   }
 }
 
